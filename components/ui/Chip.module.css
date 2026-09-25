@@ -1,0 +1,27 @@
+.chip {
+  padding: 12px 14px;
+  font-family: var(--pixel);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: color 140ms, border-color 140ms, box-shadow 140ms;
+  white-space: nowrap;
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.chip.active {
+  color: var(--magenta);
+  border-color: var(--magenta);
+  box-shadow: 0 0 10px rgba(255, 0, 110, 0.35);
+}
+
+.chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

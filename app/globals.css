@@ -17,13 +17,13 @@
   --bronze: #d97a3a;
   --line: rgba(0, 245, 255, 0.18);
   --line-2: rgba(255, 255, 255, 0.06);
-  --pixel: var(--font-press-start), system-ui, monospace;
-  --mono: var(--font-jetbrains-mono), "Courier New", monospace;
+  --pixel: var(--font-pixel), system-ui, monospace;
+  --mono: var(--font-mono), "Courier New", monospace;
 }
 
 @theme inline {
-  --font-press-start: var(--font-press-start);
-  --font-jetbrains-mono: var(--font-jetbrains-mono);
+  --font-pixel: var(--font-pixel);
+  --font-mono: var(--font-mono);
 }
 
 * { box-sizing: border-box; }

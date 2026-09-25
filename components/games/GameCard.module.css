@@ -1,0 +1,132 @@
+.card {
+  position: relative;
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-3));
+  border: 1px solid var(--line);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, transparent 60%, rgba(0, 245, 255, 0.4));
+  opacity: 0;
+  transition: opacity 180ms;
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-6px) rotateX(2deg) rotateY(-2deg);
+  border-color: var(--cyan);
+  box-shadow: 0 18px 40px -10px rgba(0, 245, 255, 0.4), 0 0 0 1px rgba(0, 245, 255, 0.3);
+}
+
+.card:hover::before {
+  opacity: 0.5;
+}
+
+.cover {
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+}
+
+.label {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font-family: var(--pixel);
+  font-size: 8px;
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--cyan);
+  border: 1px solid var(--line);
+  z-index: 2;
+  letter-spacing: 0.1em;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font-family: var(--pixel);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.desc {
+  font-size: 12px;
+  color: var(--ink-dim);
+  min-height: 36px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.scoreBadge {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.scoreBadge b {
+  font-family: var(--pixel);
+  font-size: 12px;
+  color: var(--yellow);
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 6px rgba(245, 255, 0, 0.6);
+  font-weight: normal;
+}
+
+.playBtn {
+  padding: 8px 14px;
+  font-family: var(--pixel);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  cursor: pointer;
+  transition: box-shadow 160ms, color 160ms;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+
+.playBtn:hover {
+  color: var(--ink);
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.45), inset 0 0 8px rgba(0, 245, 255, 0.25);
+}
+
+.playBtn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .card:hover {
+    transform: translateY(-4px);
+  }
+}
