@@ -1,6 +1,6 @@
 # 01 — MVP Interfaz Visual de Arcade Vault
 
-**Estado:** Approbed  
+**Estado:** Aprobado  
 **Depende de:** —  
 **Fecha:** 2026-09-25
 

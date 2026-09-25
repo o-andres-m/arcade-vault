@@ -1,0 +1,100 @@
+.podium {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+  align-items: end;
+}
+
+.slot {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  padding: 18px 14px 16px;
+  text-align: center;
+  transition: transform 180ms ease;
+}
+
+.slot:hover {
+  transform: translateY(-4px);
+}
+
+.slot.gold {
+  border-color: var(--gold);
+  box-shadow: 0 0 22px rgba(255, 207, 58, 0.35);
+  padding-top: 24px;
+  padding-bottom: 20px;
+}
+
+.slot.silver {
+  border-color: var(--silver);
+  box-shadow: 0 0 12px rgba(199, 208, 224, 0.2);
+}
+
+.slot.bronze {
+  border-color: var(--bronze);
+  box-shadow: 0 0 12px rgba(217, 122, 58, 0.2);
+}
+
+.rankNum {
+  font-family: var(--pixel);
+  font-size: 28px;
+  text-shadow: 0 0 12px currentColor;
+  margin-bottom: 8px;
+}
+
+.slot.gold .rankNum {
+  color: var(--gold);
+  font-size: 36px;
+}
+
+.slot.silver .rankNum {
+  color: var(--silver);
+}
+
+.slot.bronze .rankNum {
+  color: var(--bronze);
+}
+
+.name {
+  font-family: var(--pixel);
+  font-size: 12px;
+  margin-top: 8px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.slot.gold .name {
+  font-size: 14px;
+}
+
+.score {
+  font-family: var(--pixel);
+  font-size: 16px;
+  color: var(--cyan);
+  margin-top: 8px;
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.5);
+}
+
+.slot.gold .score {
+  font-size: 18px;
+}
+
+.date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-top: 6px;
+  letter-spacing: 0.12em;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .podium {
+    grid-template-columns: 1fr;
+  }
+
+  .slot.gold {
+    order: -1;
+  }
+}
