@@ -119,3 +119,36 @@ export const PLAYERS = [
   "VECTORX",
   "JOY_STK",
 ];
+
+export const FEATURES = [
+  {
+    icon: "GAMEPAD" as const,
+    title: "JUEGOS CLÁSICOS",
+    desc: "Arkanoid, Tetris, Snake y muchos más. Los mejores arcades de todos los tiempos en un solo lugar.",
+    color: "cyan"
+  },
+  {
+    icon: "FREE" as const,
+    title: "100% GRATIS",
+    desc: "Sin suscripciones, sin pagos ocultos. Todos los juegos disponibles de forma gratuita.",
+    color: "yellow"
+  },
+  {
+    icon: "TROPHY" as const,
+    title: "LADDER BOARDS",
+    desc: "Compite con jugadores de todo el mundo. Escala el ranking y demuestra quién es el mejor.",
+    color: "magenta"
+  },
+  {
+    icon: "ROCKET" as const,
+    title: "SIEMPRE CRECIENDO",
+    desc: "Agregamos nuevos juegos constantemente. Vuelve seguido, siempre habrá algo nuevo que jugar.",
+    color: "green"
+  },
+];
+
+export const STATS = [
+  { number: "12+", unit: "JUEGOS", subtitle: "Y CONTANDO" },
+  { number: "MILES", unit: "DE PARTIDAS", subtitle: "JUGADAS CADA DÍA" },
+  { number: "GLOBAL", unit: "RANKING", subtitle: "COMPITE CON EL MUNDO" },
+];

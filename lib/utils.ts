@@ -35,3 +35,42 @@ export function seededScores(seed: number, count: number = 12): LeaderboardEntry
 
   return rows.sort((a, b) => b.score - a.score).map((r, i) => ({ ...r, rank: i + 1 }));
 }
+
+export interface RecentScore {
+  player: string;
+  game: string;
+  score: number;
+  timeAgo: string;
+  color: string;
+}
+
+export function generateRecentActivity(count: number): RecentScore[] {
+  const games = ["Caída", "Glotón", "Invasores", "Rocas", "Bloque Buster", "Serpentina", "Ranaria"];
+  const players = ["NEONFOX", "PX_KAI", "Z3R0COOL", "VAULT_07", "GLITCHA", "ARKADYA", "CYBER_LU"];
+  const colors = ["magenta", "yellow", "green", "cyan"];
+
+  return Array.from({ length: count }, (_, i) => ({
+    player: players[i % players.length],
+    game: games[i % games.length],
+    score: Math.floor(Math.random() * 200000) + 10000,
+    timeAgo: `hace ${2 + i * 3} min`,
+    color: colors[i % colors.length],
+  }));
+}
+
+export interface TopPlayer {
+  rank: number;
+  player: string;
+  score: number;
+}
+
+export function generateTopPlayers(count: number): TopPlayer[] {
+  const players = ["NEONFOX", "PX_KAI", "M00NRYU", "VAULT_07", "GLITCHA"];
+  const baseScore = 312840;
+
+  return players.slice(0, count).map((name, i) => ({
+    rank: i + 1,
+    player: name,
+    score: baseScore - (i * 60000),
+  }));
+}
