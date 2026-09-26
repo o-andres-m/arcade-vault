@@ -8,10 +8,19 @@ export async function POST(request: Request) {
   try {
     // Verificar que las variables de entorno existen
     const apiKey = process.env.RESEND_API_KEY;
+    const fromEmail = process.env.FROM_EMAIL;
     const contactEmail = process.env.CONTACT_EMAIL;
 
     if (!apiKey) {
       console.error('RESEND_API_KEY no está configurada');
+      return NextResponse.json(
+        { success: false, error: 'Configuración del servidor incompleta' },
+        { status: 500 }
+      );
+    }
+
+    if (!fromEmail) {
+      console.error('FROM_EMAIL no está configurada');
       return NextResponse.json(
         { success: false, error: 'Configuración del servidor incompleta' },
         { status: 500 }
@@ -87,7 +96,7 @@ Enviado desde Arcade Vault`;
 
     // Enviar email
     const { data, error } = await resend.emails.send({
-      from: contactEmail,
+      from: fromEmail,
       to: contactEmail,
       replyTo: trimmedEmail,
       subject: 'Nuevo mensaje desde Arcade Vault',
