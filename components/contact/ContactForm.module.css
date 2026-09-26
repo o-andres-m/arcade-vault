@@ -1,0 +1,198 @@
+/* Formulario de contacto */
+.contactForm {
+  max-width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  padding: 2rem;
+  border-radius: 4px;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.charCount {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  color: #fff;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  border-radius: 2px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+.field input:disabled,
+.field textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.btnSubmit {
+  width: 100%;
+  background: rgba(0, 255, 255, 0.1);
+  border: 2px solid rgba(0, 255, 255, 0.6);
+  color: #0ff;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 2px;
+}
+
+.btnSubmit:hover:not(:disabled) {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.btnSubmit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animación shake */
+.shake {
+  animation: shake 0.4s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Terminal de éxito */
+.terminalSuccess,
+.terminalError {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}
+
+.termBar {
+  background: rgba(0, 255, 255, 0.1);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.termDots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.termDots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dotRed {
+  background: #ff5f56;
+  box-shadow: 0 0 4px #ff5f56;
+}
+
+.dotYellow {
+  background: #ffbd2e;
+  box-shadow: 0 0 4px #ffbd2e;
+}
+
+.dotGreen {
+  background: #27c93f;
+  box-shadow: 0 0 4px #27c93f;
+}
+
+.termTitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.05em;
+}
+
+.termBody {
+  padding: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.line {
+  margin-bottom: 0.5rem;
+}
+
+.prompt {
+  color: #0ff;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.output {
+  color: #0f0;
+}
+
+.errorOutput {
+  color: #ff5f56;
+}
+
+.caret {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+  color: #0ff;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.btnTerminal {
+  width: 100%;
+  background: rgba(0, 255, 255, 0.1);
+  border: none;
+  border-top: 1px solid rgba(0, 255, 255, 0.2);
+  color: #0ff;
+  padding: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btnTerminal:hover {
+  background: rgba(0, 255, 255, 0.2);
+}
