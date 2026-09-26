@@ -11,22 +11,26 @@ function useReveal() {
     if (hasRun.current) return;
     hasRun.current = true;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
+    // Esperar al siguiente frame para asegurar que el DOM esté renderizado
+    requestAnimationFrame(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
 
-    const elements = document.querySelectorAll('.reveal');
-    elements.forEach((el) => observer.observe(el));
+      const elements = document.querySelectorAll('.reveal');
+      elements.forEach((el) => observer.observe(el));
 
-    return () => observer.disconnect();
+      // Cleanup cuando se desmonte el componente
+      return () => observer.disconnect();
+    });
   }, []);
 }
 

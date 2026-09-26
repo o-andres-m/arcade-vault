@@ -1,6 +1,6 @@
 # 02 — Página About con Formulario de Contacto
 
-**Estado:** Aprobada  
+**Estado:** Implementado  
 **Depende de:** SPEC 01  
 **Fecha:** 2026-09-26
 
