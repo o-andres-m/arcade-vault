@@ -17,17 +17,31 @@ export function Nav({ user, onSignOut }: NavProps) {
 
   const closeMobile = () => setMobileOpen(false);
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    if (path === "/biblioteca") {
+      return pathname === "/biblioteca" || pathname.startsWith("/juego/");
+    }
+    return pathname === path;
+  };
 
   return (
     <>
       <nav className={styles.nav}>
-        <Link href="/biblioteca" className={styles.logo} onClick={closeMobile}>
+        <Link href="/" className={styles.logo} onClick={closeMobile}>
           <div className={styles.logoMark} />
           <span className={styles.logoText}>ARCADE VAULT</span>
         </Link>
 
         <div className={styles.links}>
+          <Link
+            href="/"
+            className={isActive("/") ? styles.active : ""}
+          >
+            INICIO
+          </Link>
           <Link
             href="/biblioteca"
             className={isActive("/biblioteca") ? styles.active : ""}
@@ -39,6 +53,12 @@ export function Nav({ user, onSignOut }: NavProps) {
             className={isActive("/salon") ? styles.active : ""}
           >
             SALÓN DE LA FAMA
+          </Link>
+          <Link
+            href="/about"
+            className={isActive("/about") ? styles.active : ""}
+          >
+            ACERCA DE
           </Link>
         </div>
 
@@ -85,6 +105,13 @@ export function Nav({ user, onSignOut }: NavProps) {
         </button>
 
         <Link
+          href="/"
+          className={isActive("/") ? styles.active : ""}
+          onClick={closeMobile}
+        >
+          INICIO
+        </Link>
+        <Link
           href="/biblioteca"
           className={isActive("/biblioteca") ? styles.active : ""}
           onClick={closeMobile}
@@ -97,6 +124,13 @@ export function Nav({ user, onSignOut }: NavProps) {
           onClick={closeMobile}
         >
           SALÓN DE LA FAMA
+        </Link>
+        <Link
+          href="/about"
+          className={isActive("/about") ? styles.active : ""}
+          onClick={closeMobile}
+        >
+          ACERCA DE
         </Link>
 
         <div className={styles.divider} />
