@@ -98,10 +98,10 @@ export default function JuegoDetailPage({ params }: PageProps) {
                 entry.rank === 1
                   ? "top1"
                   : entry.rank === 2
-                  ? "top2"
-                  : entry.rank === 3
-                  ? "top3"
-                  : ""
+                    ? "top2"
+                    : entry.rank === 3
+                      ? "top3"
+                      : ""
               }`}
             >
               <span className="rk">#{entry.rank}</span>

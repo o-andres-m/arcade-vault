@@ -25,10 +25,10 @@ export function Leaderboard({ entries, userEntry }: LeaderboardProps) {
             entry.rank === 1
               ? styles.top1
               : entry.rank === 2
-              ? styles.top2
-              : entry.rank === 3
-              ? styles.top3
-              : ""
+                ? styles.top2
+                : entry.rank === 3
+                  ? styles.top3
+                  : ""
           }`}
           style={{ animationDelay: `${index * 40}ms` }}
         >

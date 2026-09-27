@@ -35,16 +35,10 @@ export default function Home() {
             Sin descargas. Sin costo. Solo diversión.
           </p>
           <div className="home-ctas">
-            <button
-              className="btn xl pulse"
-              onClick={() => router.push("/biblioteca")}
-            >
+            <button className="btn xl pulse" onClick={() => router.push("/biblioteca")}>
               ▶ EXPLORAR JUEGOS
             </button>
-            <button
-              className="btn xl magenta"
-              onClick={() => router.push("/auth")}
-            >
+            <button className="btn xl magenta" onClick={() => router.push("/auth")}>
               ✦ CREAR CUENTA
             </button>
           </div>
@@ -86,11 +80,7 @@ export default function Home() {
         </div>
         <div className="mini-rail">
           {GAMES.slice(0, 6).map((g) => (
-            <MiniCard
-              key={g.id}
-              game={g}
-              onClick={() => router.push(`/juego/${g.id}`)}
-            />
+            <MiniCard key={g.id} game={g} onClick={() => router.push(`/juego/${g.id}`)} />
           ))}
         </div>
         <div style={{ textAlign: "center", marginTop: 24 }}>
@@ -104,11 +94,7 @@ export default function Home() {
       <section className="home-stats reveal">
         <div className="stats-inner">
           {STATS.map((st, i) => (
-            <div
-              key={i}
-              className="stat-block"
-              style={{ transitionDelay: `${i * 90}ms` }}
-            >
+            <div key={i} className="stat-block" style={{ transitionDelay: `${i * 90}ms` }}>
               <div className="stat-n neon-yellow">{st.number}</div>
               <div className="stat-u pixel">{st.unit}</div>
               <div className="stat-s">{st.subtitle}</div>
@@ -132,11 +118,7 @@ export default function Home() {
             </div>
             <div className="ticker">
               {recentActivity.map((r, i) => (
-                <div
-                  key={i}
-                  className="tick-row"
-                  style={{ animationDelay: `${i * 60}ms` }}
-                >
+                <div key={i} className="tick-row" style={{ animationDelay: `${i * 60}ms` }}>
                   <span className={`tk-p neon-${r.color}`}>{r.player}</span>
                   <span className="tk-mid">▸ {r.game}</span>
                   <span className="tk-s">+{r.score.toLocaleString("es-ES")}</span>
@@ -149,13 +131,8 @@ export default function Home() {
           {/* Card: Top jugadores */}
           <div className="activity-card">
             <div className="ac-head">
-              <div className="ac-title pixel neon-magenta">
-                ▸ TOP JUGADORES · HOY
-              </div>
-              <button
-                className="lb-link"
-                onClick={() => router.push("/salon")}
-              >
+              <div className="ac-title pixel neon-magenta">▸ TOP JUGADORES · HOY</div>
+              <button className="lb-link" onClick={() => router.push("/salon")}>
                 VER SALÓN →
               </button>
             </div>
@@ -167,14 +144,9 @@ export default function Home() {
                     i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""
                   }`}
                 >
-                  <span className="tp-rk">
-                    #{String(r.rank).padStart(2, "0")}
-                  </span>
+                  <span className="tp-rk">#{String(r.rank).padStart(2, "0")}</span>
                   <span className="tp-bar">
-                    <span
-                      className="tp-fill"
-                      style={{ width: `${100 - i * 16}%` }}
-                    ></span>
+                    <span className="tp-fill" style={{ width: `${100 - i * 16}%` }}></span>
                   </span>
                   <span className="tp-p">{r.player}</span>
                   <span className="tp-s">{r.score.toLocaleString("es-ES")}</span>
@@ -228,22 +200,22 @@ export default function Home() {
             <div className="faq-item">
               <div className="faq-q pixel">¿REALMENTE ES GRATIS?</div>
               <div className="faq-a">
-                Sí. Arcade Vault es un proyecto sin fines de lucro hecho por
-                amor a los clásicos. No hay versión &quot;premium&quot; escondida.
+                Sí. Arcade Vault es un proyecto sin fines de lucro hecho por amor a los clásicos. No
+                hay versión &quot;premium&quot; escondida.
               </div>
             </div>
             <div className="faq-item">
               <div className="faq-q pixel">¿NECESITO CREAR CUENTA?</div>
               <div className="faq-a">
-                No. Puedes jugar como invitado. Si quieres guardar tu puntuación
-                y aparecer en el ranking, regístrate en 10 segundos.
+                No. Puedes jugar como invitado. Si quieres guardar tu puntuación y aparecer en el
+                ranking, regístrate en 10 segundos.
               </div>
             </div>
             <div className="faq-item">
               <div className="faq-q pixel">¿CÓMO SOBREVIVEN SIN COBRAR?</div>
               <div className="faq-a">
-                Es un proyecto comunitario. Si te gusta, compártelo. Esa es toda
-                la moneda que aceptamos.
+                Es un proyecto comunitario. Si te gusta, compártelo. Esa es toda la moneda que
+                aceptamos.
               </div>
             </div>
           </div>
@@ -253,15 +225,10 @@ export default function Home() {
       {/* 8. CTA FINAL */}
       <section className="home-final reveal">
         <h2 className="final-title pixel">¿LISTO PARA JUGAR?</h2>
-        <button
-          className="btn xl pulse final-cta"
-          onClick={() => router.push("/biblioteca")}
-        >
+        <button className="btn xl pulse final-cta" onClick={() => router.push("/biblioteca")}>
           INSERTAR MONEDA →
         </button>
-        <div className="final-tag">
-          Gratis. Sin registro obligatorio. Empieza en segundos.
-        </div>
+        <div className="final-tag">Gratis. Sin registro obligatorio. Empieza en segundos.</div>
       </section>
     </div>
   );

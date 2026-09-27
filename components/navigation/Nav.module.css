@@ -30,7 +30,9 @@
     linear-gradient(45deg, var(--magenta) 0 50%, transparent 50%),
     linear-gradient(-45deg, var(--cyan) 0 50%, transparent 50%);
   background-blend-mode: screen;
-  box-shadow: 0 0 12px rgba(0, 245, 255, 0.55), inset 0 0 6px rgba(255, 0, 110, 0.5);
+  box-shadow:
+    0 0 12px rgba(0, 245, 255, 0.55),
+    inset 0 0 6px rgba(255, 0, 110, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
@@ -75,7 +77,9 @@
   bottom: 4px;
   height: 2px;
   background: var(--cyan);
-  box-shadow: 0 0 8px var(--cyan), 0 0 16px var(--cyan);
+  box-shadow:
+    0 0 8px var(--cyan),
+    0 0 16px var(--cyan);
 }
 
 .spacer {
@@ -110,7 +114,9 @@
   border: 1px solid var(--cyan);
   color: var(--ink-dim);
   cursor: pointer;
-  transition: color 160ms, box-shadow 160ms;
+  transition:
+    color 160ms,
+    box-shadow 160ms;
   clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
 }
 

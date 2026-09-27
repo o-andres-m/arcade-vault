@@ -23,10 +23,7 @@ export function Modal({ open, onClose, children, variant = "default", className 
 
   return (
     <div className={styles.backdrop} onClick={handleBackdropClick}>
-      <div
-        className={cn(styles.modal, styles[variant], className)}
-        onClick={handleModalClick}
-      >
+      <div className={cn(styles.modal, styles[variant], className)} onClick={handleModalClick}>
         {children}
       </div>
     </div>

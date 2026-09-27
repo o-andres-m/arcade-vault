@@ -19,13 +19,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={cn(
-        styles.btn,
-        styles[variant],
-        styles[size],
-        pulse && styles.pulse,
-        className
-      )}
+      className={cn(styles.btn, styles[variant], styles[size], pulse && styles.pulse, className)}
       {...props}
     >
       {children}
