@@ -1,19 +1,85 @@
-"use client";
+'use client'
 
-import { useRouter } from "next/navigation";
-import { useReveal } from "@/hooks/useReveal";
-import FloatingSilhouettes from "@/components/home/FloatingSilhouettes";
-import MiniCard from "@/components/home/MiniCard";
-import FeatureIcon from "@/components/home/FeatureIcon";
-import { GAMES, FEATURES, STATS } from "@/lib/data";
-import { generateRecentActivity, generateTopPlayers } from "@/lib/utils";
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useReveal } from '@/hooks/useReveal'
+import FloatingSilhouettes from '@/components/home/FloatingSilhouettes'
+import MiniCard from '@/components/home/MiniCard'
+import FeatureIcon from '@/components/home/FeatureIcon'
+import { GAMES, FEATURES, STATS } from '@/lib/data'
+import { generateRecentActivity, generateTopPlayers, type RecentScore, type TopPlayer } from '@/lib/utils'
+import { getRecentActivity, getTopPlayersToday } from '@/lib/supabase/scores'
+import { createClient } from '@/lib/supabase/client'
 
 export default function Home() {
-  const router = useRouter();
-  useReveal();
+  const router = useRouter()
+  const supabase = createClient()
+  useReveal()
 
-  const recentActivity = generateRecentActivity(7);
-  const topPlayers = generateTopPlayers(5);
+  const [recentActivity, setRecentActivity] = useState<(RecentScore & { player?: string; game?: string; timeAgo?: string })[]>([])
+  const [topPlayers, setTopPlayers] = useState<TopPlayer[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      try {
+        // Intentar cargar datos reales de Supabase
+        const [realActivity, realTopPlayers] = await Promise.all([
+          getRecentActivity(7),
+          getTopPlayersToday(5),
+        ])
+
+        // Convertir RecentActivity a RecentScore
+        setRecentActivity(
+          realActivity.map((item) => ({
+            ...item,
+            player: item.username,
+            game: item.game_title,
+            timeAgo: 'hace poco',
+          })) as any
+        )
+
+        // Convertir topPlayers
+        setTopPlayers(
+          realTopPlayers.map((item) => ({
+            rank: item.rank,
+            player: item.username,
+            score: item.score,
+          }))
+        )
+      } catch (err) {
+        // Fallback a datos mock si Supabase falla
+        console.log('Usando datos mock para actividad')
+        setRecentActivity(generateRecentActivity(7))
+        setTopPlayers(generateTopPlayers(5))
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+
+    // Suscribirse a cambios en tiempo real
+    const channel = supabase
+      .channel('home-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'scores',
+        },
+        () => {
+          loadData()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   return (
     <div className="home fade-in">

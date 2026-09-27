@@ -1,36 +1,112 @@
-"use client";
+'use client'
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { User } from "@/types";
-import styles from "./AuthForm.module.css";
+import { useState, FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import styles from './AuthForm.module.css'
 
-type TabType = "in" | "up";
+type TabType = 'in' | 'up'
 
 export function AuthForm() {
-  const router = useRouter();
-  const [tab, setTab] = useState<TabType>("in");
-  const [user, setUser] = useState("");
-  const [email, setEmail] = useState("");
-  const [pass, setPass] = useState("");
+  const router = useRouter()
+  const supabase = createClient()
+  const [tab, setTab] = useState<TabType>('in')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [pass, setPass] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
 
-    const userName = user.trim().toUpperCase().slice(0, 10) || "PLAYER1";
-    const newUser: User = { name: userName };
+    try {
+      if (tab === 'up') {
+        // Sign up
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password: pass,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth?next=/biblioteca`,
+          },
+        })
 
-    // Guardar en localStorage
-    localStorage.setItem("av_user", JSON.stringify(newUser));
+        if (signUpError) throw signUpError
+        if (!data.user) throw new Error('Error al crear usuario')
 
-    // Navegar a biblioteca
-    router.push("/biblioteca");
-  };
+        // Create profile
+        const userName = username.trim().slice(0, 20) || email.split('@')[0]
+        const { error: profileError } = await supabase.from('profiles').insert({
+          id: data.user.id,
+          username: userName,
+        })
 
-  const handleGuest = () => {
-    // No guardar usuario (guest mode)
-    router.push("/biblioteca");
-  };
+        if (profileError) throw profileError
+
+        router.push('/biblioteca')
+      } else {
+        // Sign in
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password: pass,
+        })
+
+        if (signInError) throw signInError
+        router.push('/biblioteca')
+      }
+    } catch (err) {
+      let message = 'Error de autenticación'
+      if (err instanceof Error) {
+        if (err.message.includes('rate limit') || err.message.includes('429')) {
+          message = 'Demasiados intentos. Espera unos minutos e intenta de nuevo.'
+        } else if (err.message.includes('User already registered')) {
+          message = 'Este email ya está registrado. Intenta iniciar sesión.'
+        } else if (err.message.includes('Invalid password')) {
+          message = 'La contraseña debe tener al menos 6 caracteres.'
+        } else {
+          message = err.message
+        }
+      }
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGuest = async () => {
+    setError('')
+    setLoading(true)
+
+    try {
+      const { error } = await supabase.auth.signInAnonymously()
+      if (error) throw error
+
+      // Create anonymous profile
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('profiles').insert({
+          id: user.id,
+          username: `GUEST_${Date.now().toString().slice(-4)}`,
+        }).select().single()
+      }
+
+      router.push('/biblioteca')
+    } catch (err) {
+      let message = 'Error al entrar como invitado'
+      if (err instanceof Error) {
+        if (err.message.includes('rate limit') || err.message.includes('429')) {
+          message = 'Demasiados intentos. Espera unos minutos e intenta de nuevo.'
+        } else {
+          message = err.message
+        }
+      }
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className={styles.card}>
@@ -42,39 +118,46 @@ export function AuthForm() {
 
       {/* Tabs */}
       <div className={styles.tabs}>
-        <button className={tab === "in" ? styles.on : ""} onClick={() => setTab("in")}>
+        <button className={tab === 'in' ? styles.on : ''} onClick={() => setTab('in')} disabled={loading}>
           INICIAR SESIÓN
         </button>
-        <button className={tab === "up" ? styles.on : ""} onClick={() => setTab("up")}>
+        <button className={tab === 'up' ? styles.on : ''} onClick={() => setTab('up')} disabled={loading}>
           CREAR CUENTA
         </button>
       </div>
 
+      {/* Error message */}
+      {error && <div className={styles.error}>{error}</div>}
+
       {/* Formulario */}
       <form onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label htmlFor="user">Usuario</label>
-          <input
-            id="user"
-            type="text"
-            placeholder="Ingresa tu usuario"
-            value={user}
-            onChange={(e) => setUser(e.target.value)}
-          />
-        </div>
-
-        {tab === "up" && (
+        {tab === 'up' && (
           <div className={`${styles.field} ${styles.slideIn}`}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="username">Usuario</label>
             <input
-              id="email"
-              type="email"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              placeholder="Tu nombre de usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={loading}
+              required
             />
           </div>
         )}
+
+        <div className={styles.field}>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="tu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            required
+          />
+        </div>
 
         <div className={styles.field}>
           <label htmlFor="pass">Contraseña</label>
@@ -84,16 +167,18 @@ export function AuthForm() {
             placeholder="••••••••"
             value={pass}
             onChange={(e) => setPass(e.target.value)}
+            disabled={loading}
+            required
           />
         </div>
 
-        <button type="submit" className={`btn ${styles.submitBtn}`}>
-          {tab === "in" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
+        <button type="submit" className={`btn ${styles.submitBtn}`} disabled={loading}>
+          {loading ? 'CARGANDO...' : tab === 'in' ? 'ENTRAR AL VAULT' : 'CREAR Y JUGAR'}
         </button>
       </form>
 
       {/* Guest */}
-      <button className={`btn ghost ${styles.guestBtn}`} onClick={handleGuest}>
+      <button className={`btn ghost ${styles.guestBtn}`} onClick={handleGuest} disabled={loading}>
         JUGAR COMO INVITADO
       </button>
 
@@ -115,5 +200,5 @@ export function AuthForm() {
         Al continuar, aceptas nuestros términos de servicio y política de privacidad
       </div>
     </div>
-  );
+  )
 }

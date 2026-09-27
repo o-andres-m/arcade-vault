@@ -46,3 +46,54 @@ next-env.d.ts
 
 .playwright-screenshots/*
 !.playwright-screenshots/.gitkeep
+
+# IDE & Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+
+# OS
+Thumbs.db
+.env.local
+.env.*.local
+
+# Supabase
+supabase/functions/node_modules/
+supabase/migrations/.temp/
+.supabase/
+
+# Logs
+logs
+*.log
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Mac
+.AppleDouble
+.LSOverride
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Claude Code
+.claude/
+!.claude/agents/
+
+# Next.js
+.next
+out
+dist

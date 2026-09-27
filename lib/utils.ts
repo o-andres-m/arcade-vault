@@ -27,10 +27,14 @@ export function seededScores(seed: number, count: number = 12): LeaderboardEntry
 
     rows.push({
       rank: i + 1,
-      name,
+      user_id: `mock-${i}`,
+      username: name,
+      avatar_url: null,
       score: Math.max(score, 1000),
+      created_at: `2026-${mon}-${day}T00:00:00Z`,
+      name,
       date: `${day}/${mon}/2026`,
-    });
+    } as any);
   }
 
   return rows.sort((a, b) => b.score - a.score).map((r, i) => ({ ...r, rank: i + 1 }));

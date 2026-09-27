@@ -51,8 +51,12 @@ export function GamePlayer({ game }: GamePlayerProps) {
 
     // Guardar en localStorage
     const newScore: Score = {
-      game: game.id,
+      id: `local-${Date.now()}`,
+      user_id: 'local',
+      game_id: game.id,
       score: score,
+      created_at: new Date().toISOString(),
+      game: game.id,
       name: playerName,
       at: Date.now(),
     };
