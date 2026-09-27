@@ -96,11 +96,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.18) 0 2px,
-    transparent 2px 4px
-  );
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 4px);
   pointer-events: none;
   mix-blend-mode: multiply;
   z-index: 10;
@@ -140,7 +136,9 @@
 
 @keyframes gridscroll {
   to {
-    background-position: 0 40px, 0 40px;
+    background-position:
+      0 40px,
+      0 40px;
   }
 }
 
@@ -269,7 +267,9 @@
   width: min(480px, 96vw);
   background: var(--bg-2);
   border: 1px solid var(--magenta);
-  box-shadow: 0 0 30px rgba(255, 0, 110, 0.4), inset 0 0 16px rgba(255, 0, 110, 0.18);
+  box-shadow:
+    0 0 30px rgba(255, 0, 110, 0.4),
+    inset 0 0 16px rgba(255, 0, 110, 0.18);
   padding: 32px;
   text-align: center;
   position: relative;

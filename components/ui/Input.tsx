@@ -17,12 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={cn(styles.input, className)}
-          {...props}
-        />
+        <input ref={ref} id={inputId} className={cn(styles.input, className)} {...props} />
       </div>
     );
   }

@@ -1,0 +1,17 @@
+node_modules/
+package-lock.json
+.next/
+out/
+build/
+dist/
+references/
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+*.log
+.claude/
+.git/
+.playwright-mcp/

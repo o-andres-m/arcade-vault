@@ -1,0 +1,18 @@
+{
+  "$schema": "https://claude.ai/schemas/settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r filepath; if [ -n \"$filepath\" ] && [ -f \"$filepath\" ]; then case \"$filepath\" in */references/*) exit 0 ;; *.ts|*.tsx|*.mts|*.md|*.json|*.css) if command -v prettier >/dev/null 2>&1; then prettier --write \"$filepath\" 2>/dev/null || true; fi; case \"$filepath\" in *.ts|*.tsx|*.mts) if command -v eslint >/dev/null 2>&1; then eslint --fix \"$filepath\" 2>/dev/null || true; fi ;; esac ;; esac; fi; }",
+            "statusMessage": "Formateando archivo...",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

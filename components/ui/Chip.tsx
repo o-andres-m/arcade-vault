@@ -9,10 +9,7 @@ interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export function Chip({ active = false, className, children, ...props }: ChipProps) {
   return (
-    <button
-      className={cn(styles.chip, active && styles.active, className)}
-      {...props}
-    >
+    <button className={cn(styles.chip, active && styles.active, className)} {...props}>
       {children}
     </button>
   );

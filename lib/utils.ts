@@ -71,6 +71,6 @@ export function generateTopPlayers(count: number): TopPlayer[] {
   return players.slice(0, count).map((name, i) => ({
     rank: i + 1,
     player: name,
-    score: baseScore - (i * 60000),
+    score: baseScore - i * 60000,
   }));
 }

@@ -89,15 +89,11 @@ export function GamePlayer({ game }: GamePlayerProps) {
         </div>
         <div className={styles.hudStat}>
           <div className={styles.label}>PUNTUACIÓN</div>
-          <div className={`${styles.value} ${styles.cyan}`}>
-            {score.toLocaleString()}
-          </div>
+          <div className={`${styles.value} ${styles.cyan}`}>{score.toLocaleString()}</div>
         </div>
         <div className={styles.hudStat}>
           <div className={styles.label}>VIDAS</div>
-          <div className={`${styles.value} ${styles.magenta}`}>
-            {"❤".repeat(lives)}
-          </div>
+          <div className={`${styles.value} ${styles.magenta}`}>{"❤".repeat(lives)}</div>
         </div>
         <div className={styles.hudStat}>
           <div className={styles.label}>NIVEL</div>

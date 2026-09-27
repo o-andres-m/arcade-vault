@@ -35,11 +35,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.18) 0 2px,
-    transparent 2px 4px
-  );
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 4px);
   pointer-events: none;
   mix-blend-mode: multiply;
 }
@@ -49,11 +45,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    120% 90% at 50% 50%,
-    transparent 60%,
-    rgba(0, 0, 0, 0.65)
-  );
+  background: radial-gradient(120% 90% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.65));
   pointer-events: none;
 }
 
@@ -103,9 +95,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 50% 50%, #0a0030 0%, #000 70%),
-    #000;
+  background: radial-gradient(circle at 50% 50%, #0a0030 0%, #000 70%), #000;
 }
 
 .gridFloor {
@@ -121,7 +111,11 @@
 }
 
 @keyframes gridscroll {
-  to { background-position: 0 40px, 0 40px; }
+  to {
+    background-position:
+      0 40px,
+      0 40px;
+  }
 }
 
 .playerShip {
@@ -139,7 +133,9 @@
 }
 
 @keyframes bob {
-  50% { transform: translateX(-50%) translateY(-6px); }
+  50% {
+    transform: translateX(-50%) translateY(-6px);
+  }
 }
 
 .enemy {
@@ -171,5 +167,7 @@
 }
 
 @keyframes drift {
-  50% { transform: translate(20px, 10px); }
+  50% {
+    transform: translate(20px, 10px);
+  }
 }

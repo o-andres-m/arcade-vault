@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, FormEvent, useEffect } from 'react';
-import styles from './ContactForm.module.css';
+import { useState, FormEvent, useEffect } from "react";
+import styles from "./ContactForm.module.css";
 
 // Validación básica de formato de email
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type FormStatus = 'idle' | 'sending' | 'success' | 'error';
+type FormStatus = "idle" | "sending" | "success" | "error";
 
 interface FormData {
   name: string;
@@ -16,15 +16,15 @@ interface FormData {
 
 export default function ContactForm() {
   const [form, setForm] = useState<FormData>({
-    name: '',
-    email: '',
-    msg: '',
+    name: "",
+    email: "",
+    msg: "",
   });
 
-  const [status, setStatus] = useState<FormStatus>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
   const [shake, setShake] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
 
   // Efecto para limpiar el shake después de 400ms
   useEffect(() => {
@@ -34,9 +34,7 @@ export default function ContactForm() {
     }
   }, [shake]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -65,13 +63,13 @@ export default function ContactForm() {
     }
 
     // Enviar formulario
-    setStatus('sending');
+    setStatus("sending");
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: trimmedName,
@@ -84,32 +82,32 @@ export default function ContactForm() {
 
       if (data.success) {
         setUserName(trimmedName);
-        setStatus('success');
+        setStatus("success");
       } else {
-        setStatus('error');
-        setErrorMsg(data.error || 'Error al enviar el mensaje');
+        setStatus("error");
+        setErrorMsg(data.error || "Error al enviar el mensaje");
       }
     } catch (error) {
-      setStatus('error');
-      setErrorMsg('Error de conexión. Verifica tu internet e intenta nuevamente.');
-      console.error('Error al enviar formulario:', error);
+      setStatus("error");
+      setErrorMsg("Error de conexión. Verifica tu internet e intenta nuevamente.");
+      console.error("Error al enviar formulario:", error);
     }
   };
 
   const handleReset = () => {
-    setForm({ name: '', email: '', msg: '' });
-    setStatus('idle');
-    setErrorMsg('');
-    setUserName('');
+    setForm({ name: "", email: "", msg: "" });
+    setStatus("idle");
+    setErrorMsg("");
+    setUserName("");
   };
 
   const handleRetry = () => {
-    setStatus('idle');
-    setErrorMsg('');
+    setStatus("idle");
+    setErrorMsg("");
   };
 
   // Renderizado condicional según estado
-  if (status === 'success') {
+  if (status === "success") {
     return (
       <div className={styles.terminalSuccess}>
         <div className={styles.termBar}>
@@ -132,9 +130,7 @@ export default function ContactForm() {
             <span className={styles.output}>→ MENSAJE ENVIADO</span>
           </div>
           <div className={styles.line}>
-            <span className={styles.output}>
-              → MENSAJE RECIBIDO. TE RESPONDEREMOS PRONTO.
-            </span>
+            <span className={styles.output}>→ MENSAJE RECIBIDO. TE RESPONDEREMOS PRONTO.</span>
           </div>
           <div className={styles.line}>
             <span className={styles.output}>
@@ -143,18 +139,14 @@ export default function ContactForm() {
             </span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleReset}
-          className={styles.btnTerminal}
-        >
+        <button type="button" onClick={handleReset} className={styles.btnTerminal}>
           ENVIAR OTRO MENSAJE
         </button>
       </div>
     );
   }
 
-  if (status === 'error') {
+  if (status === "error") {
     return (
       <div className={styles.terminalError}>
         <div className={styles.termBar}>
@@ -178,11 +170,7 @@ export default function ContactForm() {
             <span className={styles.caret}>_</span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleRetry}
-          className={styles.btnTerminal}
-        >
+        <button type="button" onClick={handleRetry} className={styles.btnTerminal}>
           REINTENTAR
         </button>
       </div>
@@ -191,13 +179,10 @@ export default function ContactForm() {
 
   // Formulario (idle o sending)
   const charCount = form.msg.length;
-  const isDisabled = status === 'sending';
+  const isDisabled = status === "sending";
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`${styles.contactForm} ${shake ? styles.shake : ''}`}
-    >
+    <form onSubmit={handleSubmit} className={`${styles.contactForm} ${shake ? styles.shake : ""}`}>
       <div className={styles.field}>
         <label htmlFor="name">NOMBRE</label>
         <input
@@ -240,7 +225,7 @@ export default function ContactForm() {
       </div>
 
       <button type="submit" disabled={isDisabled} className={styles.btnSubmit}>
-        {isDisabled ? 'ENVIANDO...' : 'ENVIAR'}
+        {isDisabled ? "ENVIANDO..." : "ENVIAR"}
       </button>
     </form>
   );

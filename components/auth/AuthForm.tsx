@@ -42,16 +42,10 @@ export function AuthForm() {
 
       {/* Tabs */}
       <div className={styles.tabs}>
-        <button
-          className={tab === "in" ? styles.on : ""}
-          onClick={() => setTab("in")}
-        >
+        <button className={tab === "in" ? styles.on : ""} onClick={() => setTab("in")}>
           INICIAR SESIÓN
         </button>
-        <button
-          className={tab === "up" ? styles.on : ""}
-          onClick={() => setTab("up")}
-        >
+        <button className={tab === "up" ? styles.on : ""} onClick={() => setTab("up")}>
           CREAR CUENTA
         </button>
       </div>

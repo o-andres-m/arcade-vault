@@ -36,28 +36,16 @@ export function Nav({ user, onSignOut }: NavProps) {
         </Link>
 
         <div className={styles.links}>
-          <Link
-            href="/"
-            className={isActive("/") ? styles.active : ""}
-          >
+          <Link href="/" className={isActive("/") ? styles.active : ""}>
             INICIO
           </Link>
-          <Link
-            href="/biblioteca"
-            className={isActive("/biblioteca") ? styles.active : ""}
-          >
+          <Link href="/biblioteca" className={isActive("/biblioteca") ? styles.active : ""}>
             BIBLIOTECA
           </Link>
-          <Link
-            href="/salon"
-            className={isActive("/salon") ? styles.active : ""}
-          >
+          <Link href="/salon" className={isActive("/salon") ? styles.active : ""}>
             SALÓN DE LA FAMA
           </Link>
-          <Link
-            href="/about"
-            className={isActive("/about") ? styles.active : ""}
-          >
+          <Link href="/about" className={isActive("/about") ? styles.active : ""}>
             ACERCA DE
           </Link>
         </div>
@@ -96,19 +84,11 @@ export function Nav({ user, onSignOut }: NavProps) {
         onClick={closeMobile}
       />
       <div className={`${styles.mobilePanel} ${mobileOpen ? styles.open : ""}`}>
-        <button
-          className={styles.closeBtn}
-          onClick={closeMobile}
-          aria-label="Cerrar menú"
-        >
+        <button className={styles.closeBtn} onClick={closeMobile} aria-label="Cerrar menú">
           ✕
         </button>
 
-        <Link
-          href="/"
-          className={isActive("/") ? styles.active : ""}
-          onClick={closeMobile}
-        >
+        <Link href="/" className={isActive("/") ? styles.active : ""} onClick={closeMobile}>
           INICIO
         </Link>
         <Link
@@ -143,7 +123,13 @@ export function Nav({ user, onSignOut }: NavProps) {
         {user ? (
           <>
             <div className={styles.userName}>{user.name}</div>
-            <button onClick={() => { onSignOut(); closeMobile(); }} className={styles.signOutBtn}>
+            <button
+              onClick={() => {
+                onSignOut();
+                closeMobile();
+              }}
+              className={styles.signOutBtn}
+            >
               CERRAR SESIÓN
             </button>
           </>
