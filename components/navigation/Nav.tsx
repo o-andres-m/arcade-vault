@@ -58,9 +58,22 @@ export function Nav({ user, onSignOut }: NavProps) {
         </div>
 
         {user ? (
-          <button onClick={onSignOut} className={styles.authBtn}>
-            {user.name} · SALIR
-          </button>
+          <div className={styles.userMenu}>
+            <button className={styles.userMenuBtn}>
+              <span className={styles.userName}>{user.name}</span>
+            </button>
+            <div className={styles.userDropdown}>
+              <Link href="/perfil" className={styles.dropdownItem}>
+                MI PERFIL
+              </Link>
+              <button
+                onClick={onSignOut}
+                className={`${styles.dropdownItem} ${styles.logout}`}
+              >
+                CERRAR SESIÓN
+              </button>
+            </div>
+          </div>
         ) : (
           <Link href="/auth" className={styles.authBtn}>
             INICIAR SESIÓN
@@ -122,7 +135,9 @@ export function Nav({ user, onSignOut }: NavProps) {
 
         {user ? (
           <>
-            <div className={styles.userName}>{user.name}</div>
+            <Link href="/perfil" className={styles.mobileLink} onClick={closeMobile}>
+              MI PERFIL
+            </Link>
             <button
               onClick={() => {
                 onSignOut();
