@@ -51,6 +51,18 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setOver(true);
   };
 
+  const handleAsteroidsScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
+  const handleAsteroidsLivesChange = (newLives: number) => {
+    setLives(newLives);
+  };
+
+  const handleAsteroidsLevelChange = (newLevel: number) => {
+    setLevel(newLevel);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -149,7 +161,12 @@ export function GamePlayer({ game }: GamePlayerProps) {
           {/* Arena de juego */}
           <div className={styles.arena}>
             {isAsteroidsGame ? (
-              <AsteroidsGame onGameOver={handleAsteroidsGameOver} />
+              <AsteroidsGame
+                onGameOver={handleAsteroidsGameOver}
+                onScoreChange={handleAsteroidsScoreChange}
+                onLivesChange={handleAsteroidsLivesChange}
+                onLevelChange={handleAsteroidsLevelChange}
+              />
             ) : (
               <>
                 <div className={styles.gridFloor} />
