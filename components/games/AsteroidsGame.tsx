@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import { GameState, InputState } from '@/lib/game/types'
 import { initializeGame, updateGameState } from '@/lib/game/engine/gameEngine'
 import { drawGame } from '@/lib/game/renderer/draw'
@@ -12,12 +12,13 @@ interface AsteroidsGameProps {
 
 export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [gameState, setGameState] = useState<GameState>(() => initializeGame())
+  const gameStateRef = useRef<GameState>(initializeGame())
   const keysRef = useRef<Record<string, boolean>>({})
   const justPressedRef = useRef<Record<string, boolean>>({})
   const lastTimeRef = useRef<number | null>(null)
   const frameIdRef = useRef<number | null>(null)
   const gameOverCallbackRef = useRef(onGameOver)
+  const lastGameOverStateRef = useRef(false)
 
   useEffect(() => {
     gameOverCallbackRef.current = onGameOver
@@ -46,7 +47,7 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
     }
   }, [])
 
-  // Game loop
+  // Game loop + render
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -63,20 +64,30 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
           : Math.min((ts - lastTimeRef.current) / 1000, MAX_DELTA_TIME)
       lastTimeRef.current = ts
 
-      setGameState(prevState => {
-        const newState = { ...prevState }
-        const inputState: InputState = {
-          left: false,
-          right: false,
-          up: false,
-          shoot: false,
+      // Update game state in ref
+      const inputState: InputState = {
+        left: false,
+        right: false,
+        up: false,
+        shoot: false,
+      }
+      updateGameState(gameStateRef.current, dt, inputState, keysRef.current, justPressedRef.current)
+
+      // Render immediately
+      drawGame(ctx, gameStateRef.current)
+
+      // Check if game over
+      if (gameStateRef.current.state === 'gameover' && !lastGameOverStateRef.current) {
+        lastGameOverStateRef.current = true
+        if (gameOverCallbackRef.current) {
+          gameOverCallbackRef.current(gameStateRef.current.score)
         }
-        updateGameState(newState, dt, inputState, keysRef.current, justPressedRef.current)
-        return newState
-      })
+      }
 
       // Reset justPressed after frame
       justPressedRef.current = {}
+
+      frameIdRef.current = requestAnimationFrame(loop)
     }
 
     frameIdRef.current = requestAnimationFrame(loop)
@@ -87,24 +98,6 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
       }
     }
   }, [])
-
-  // Render canvas
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    drawGame(ctx, gameState)
-  }, [gameState])
-
-  // Call onGameOver when game ends
-  useEffect(() => {
-    if (gameState.state === 'gameover' && gameOverCallbackRef.current) {
-      gameOverCallbackRef.current(gameState.score)
-    }
-  }, [gameState.state, gameState.score])
 
   return (
     <div className="flex justify-center items-center">
