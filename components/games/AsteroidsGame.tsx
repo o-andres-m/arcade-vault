@@ -8,9 +8,12 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT, MAX_DELTA_TIME } from '@/lib/game/constant
 
 interface AsteroidsGameProps {
   onGameOver?: (score: number) => void
+  onScoreChange?: (score: number) => void
+  onLivesChange?: (lives: number) => void
+  onLevelChange?: (level: number) => void
 }
 
-export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
+export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLevelChange }: AsteroidsGameProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameStateRef = useRef<GameState>(initializeGame())
   const keysRef = useRef<Record<string, boolean>>({})
@@ -18,11 +21,20 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
   const lastTimeRef = useRef<number | null>(null)
   const frameIdRef = useRef<number | null>(null)
   const gameOverCallbackRef = useRef(onGameOver)
+  const scoreChangeCallbackRef = useRef(onScoreChange)
+  const livesChangeCallbackRef = useRef(onLivesChange)
+  const levelChangeCallbackRef = useRef(onLevelChange)
   const lastGameOverStateRef = useRef(false)
+  const lastScoreRef = useRef(0)
+  const lastLivesRef = useRef(3)
+  const lastLevelRef = useRef(1)
 
   useEffect(() => {
     gameOverCallbackRef.current = onGameOver
-  }, [onGameOver])
+    scoreChangeCallbackRef.current = onScoreChange
+    livesChangeCallbackRef.current = onLivesChange
+    levelChangeCallbackRef.current = onLevelChange
+  }, [onGameOver, onScoreChange, onLivesChange, onLevelChange])
 
   // Handle key events
   useEffect(() => {
@@ -83,6 +95,29 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
 
       // Render immediately
       drawGame(ctx, gameStateRef.current)
+
+      // Sync state updates with parent
+      if (gameStateRef.current.score !== lastScoreRef.current) {
+        lastScoreRef.current = gameStateRef.current.score
+        if (scoreChangeCallbackRef.current) {
+          scoreChangeCallbackRef.current(gameStateRef.current.score)
+        }
+      }
+
+      if (gameStateRef.current.lives !== lastLivesRef.current) {
+        lastLivesRef.current = gameStateRef.current.lives
+        if (livesChangeCallbackRef.current) {
+          livesChangeCallbackRef.current(gameStateRef.current.lives)
+        }
+      }
+
+      const currentLevel = Math.floor(gameStateRef.current.score / 2500) + 1
+      if (currentLevel !== lastLevelRef.current) {
+        lastLevelRef.current = currentLevel
+        if (levelChangeCallbackRef.current) {
+          levelChangeCallbackRef.current(currentLevel)
+        }
+      }
 
       // Check if game over
       if (gameStateRef.current.state === 'gameover' && !lastGameOverStateRef.current) {
