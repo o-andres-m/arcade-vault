@@ -26,7 +26,12 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
 
   // Handle key events
   useEffect(() => {
+    const gameKeys = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'])
+
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameKeys.has(e.code)) {
+        e.preventDefault()
+      }
       const code = e.code
       if (!keysRef.current[code]) {
         justPressedRef.current[code] = true
@@ -35,6 +40,9 @@ export const AsteroidsGame = ({ onGameOver }: AsteroidsGameProps) => {
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (gameKeys.has(e.code)) {
+        e.preventDefault()
+      }
       keysRef.current[e.code] = false
     }
 
