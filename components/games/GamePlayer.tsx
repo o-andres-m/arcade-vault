@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Game, Score } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
+import { saveScore } from "@/lib/supabase/scores";
+import { AsteroidsGame } from "./AsteroidsGame";
 import styles from "./GamePlayer.module.css";
 
 interface GamePlayerProps {
@@ -11,6 +14,7 @@ interface GamePlayerProps {
 
 export function GamePlayer({ game }: GamePlayerProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
@@ -18,17 +22,21 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [over, setOver] = useState(false);
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Auto-incremento de puntuación
+  // Para juego Asteroides
+  const isAsteroidsGame = game.id === 'rocas';
+
+  // Auto-incremento de puntuación (solo para juegos no-Asteroides)
   useEffect(() => {
-    if (paused || over) return;
+    if (isAsteroidsGame || paused || over) return;
 
     const interval = setInterval(() => {
       setScore((prev) => prev + Math.floor(Math.random() * 50 + 10));
     }, 220);
 
     return () => clearInterval(interval);
-  }, [paused, over]);
+  }, [isAsteroidsGame, paused, over]);
 
   // Subir nivel cada 2500 puntos
   useEffect(() => {
@@ -38,6 +46,11 @@ export function GamePlayer({ game }: GamePlayerProps) {
     }
   }, [score, level]);
 
+  const handleAsteroidsGameOver = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -46,27 +59,40 @@ export function GamePlayer({ game }: GamePlayerProps) {
     router.push(`/juego/${game.id}`);
   };
 
-  const handleSaveScore = () => {
+  const handleSaveScore = async () => {
+    setIsSaving(true);
     const playerName = name.trim().toUpperCase().slice(0, 10) || "PLAYER1";
 
-    // Guardar en localStorage
-    const newScore: Score = {
-      id: `local-${Date.now()}`,
-      user_id: 'local',
-      game_id: game.id,
-      score: score,
-      created_at: new Date().toISOString(),
-      game: game.id,
-      name: playerName,
-      at: Date.now(),
-    };
+    try {
+      // Si es juego Asteroides y está logueado, guardar en Supabase
+      if (isAsteroidsGame && user) {
+        await saveScore('rocas', score);
+      } else {
+        // Guardar en localStorage
+        const newScore: Score = {
+          id: `local-${Date.now()}`,
+          user_id: 'local',
+          game_id: game.id,
+          score: score,
+          created_at: new Date().toISOString(),
+          game: game.id,
+          name: playerName,
+          at: Date.now(),
+        };
 
-    const existingScores = localStorage.getItem("av_scores");
-    const scores: Score[] = existingScores ? JSON.parse(existingScores) : [];
-    scores.push(newScore);
-    localStorage.setItem("av_scores", JSON.stringify(scores));
+        const existingScores = localStorage.getItem("av_scores");
+        const scores: Score[] = existingScores ? JSON.parse(existingScores) : [];
+        scores.push(newScore);
+        localStorage.setItem("av_scores", JSON.stringify(scores));
+      }
 
-    setSaved(true);
+      setSaved(true);
+    } catch (error) {
+      console.error('Error saving score:', error);
+      alert('No se pudo guardar el score. Por favor, intenta de nuevo.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handlePlayAgain = () => {
@@ -122,11 +148,17 @@ export function GamePlayer({ game }: GamePlayerProps) {
         <div className={styles.screen}>
           {/* Arena de juego */}
           <div className={styles.arena}>
-            <div className={styles.gridFloor} />
-            <div className={styles.playerShip} />
-            <div className={`${styles.enemy} ${styles.e1}`} />
-            <div className={`${styles.enemy} ${styles.e2}`} />
-            <div className={`${styles.enemy} ${styles.e3}`} />
+            {isAsteroidsGame ? (
+              <AsteroidsGame onGameOver={handleAsteroidsGameOver} />
+            ) : (
+              <>
+                <div className={styles.gridFloor} />
+                <div className={styles.playerShip} />
+                <div className={`${styles.enemy} ${styles.e1}`} />
+                <div className={`${styles.enemy} ${styles.e2}`} />
+                <div className={`${styles.enemy} ${styles.e3}`} />
+              </>
+            )}
           </div>
 
           {/* Overlay de pausa */}
@@ -162,16 +194,18 @@ export function GamePlayer({ game }: GamePlayerProps) {
             {!saved ? (
               <>
                 <div className={styles.inputRow}>
-                  <input
-                    type="text"
-                    placeholder="TU NOMBRE"
-                    value={name}
-                    onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
-                    maxLength={10}
-                    className={styles.nameInput}
-                  />
-                  <button className="btn" onClick={handleSaveScore}>
-                    GUARDAR
+                  {!isAsteroidsGame && (
+                    <input
+                      type="text"
+                      placeholder="TU NOMBRE"
+                      value={name}
+                      onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
+                      maxLength={10}
+                      className={styles.nameInput}
+                    />
+                  )}
+                  <button className="btn" onClick={handleSaveScore} disabled={isSaving}>
+                    {isSaving ? 'GUARDANDO...' : 'GUARDAR'}
                   </button>
                 </div>
               </>
