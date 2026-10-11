@@ -1,0 +1,42 @@
+import { Particle as ParticleType } from '../types'
+import { random } from '../physics/utils'
+import { PARTICLE_MIN_SPEED, PARTICLE_MAX_SPEED } from '../constants'
+
+export class Particle implements ParticleType {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  life: number
+  ttl: number
+  dead: boolean
+
+  constructor(x: number, y: number) {
+    this.x = x
+    this.y = y
+    const angle = random(0, Math.PI * 2)
+    const speed = random(PARTICLE_MIN_SPEED, PARTICLE_MAX_SPEED)
+    this.vx = Math.cos(angle) * speed
+    this.vy = Math.sin(angle) * speed
+    this.life = random(0.4, 1.1)
+    this.ttl = this.life
+    this.dead = false
+  }
+
+  update(dt: number): void {
+    this.x += this.vx * dt
+    this.y += this.vy * dt
+    this.ttl -= dt
+    if (this.ttl <= 0) this.dead = true
+  }
+
+  draw(ctx: CanvasRenderingContext2D): void {
+    const alpha = this.ttl / this.life
+    ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(2)})`
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(this.x, this.y)
+    ctx.lineTo(this.x - this.vx * 0.05, this.y - this.vy * 0.05)
+    ctx.stroke()
+  }
+}
