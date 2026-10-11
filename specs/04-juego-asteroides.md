@@ -1,6 +1,6 @@
 # 04 — JUEGO ASTEROIDES ADAPTADO A NEXT.JS
 
-**Estado:** Aprobado
+**Estado:** Implementado
 **Depende de:** SPEC 03
 **Fecha:** 2026-10-11
 
