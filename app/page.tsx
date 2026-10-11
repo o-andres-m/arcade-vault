@@ -6,6 +6,7 @@ import { useReveal } from '@/hooks/useReveal'
 import FloatingSilhouettes from '@/components/home/FloatingSilhouettes'
 import MiniCard from '@/components/home/MiniCard'
 import FeatureIcon from '@/components/home/FeatureIcon'
+import { GamesTable } from '@/components/games/GamesTable'
 import { GAMES, FEATURES, STATS } from '@/lib/data'
 import { generateRecentActivity, generateTopPlayers, type RecentScore, type TopPlayer } from '@/lib/utils'
 import { getRecentActivity, getTopPlayersToday } from '@/lib/supabase/scores'
@@ -154,6 +155,11 @@ export default function Home() {
             VER TODOS LOS JUEGOS →
           </button>
         </div>
+      </section>
+
+      {/* 3B. TABLA DE JUEGOS */}
+      <section className="home-section reveal">
+        <GamesTable games={GAMES} />
       </section>
 
       {/* 4. STATS */}

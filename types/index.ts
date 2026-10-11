@@ -75,3 +75,12 @@ export interface RecentActivity {
   created_at: string;
   color: string;
 }
+
+// Tipo para stats personales por juego
+export interface GameTableRow {
+  gameId: string;
+  gameName: string;
+  lastPlayed: string | null;
+  bestScore: number | null;
+  isPending: boolean;
+}
