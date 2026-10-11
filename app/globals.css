@@ -2706,3 +2706,86 @@ a {
     padding: 32px 16px;
   }
 }
+
+/* Games Table styles */
+.games-table-wrapper {
+  padding: 0 20px;
+  margin: 60px 0;
+}
+
+.games-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.games-table thead {
+  background: var(--bg-3);
+  border-bottom: 2px solid var(--line);
+}
+
+.games-table th {
+  padding: 16px 12px;
+  text-align: left;
+  font-family: var(--pixel);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.games-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line-2);
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.games-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.games-table tbody tr:hover {
+  background: var(--bg-3);
+}
+
+.game-name {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.game-lastplayed {
+  color: var(--ink-dim);
+  font-size: 12px;
+}
+
+.game-bestscore {
+  font-family: var(--mono);
+  font-weight: 500;
+  color: var(--yellow);
+}
+
+.game-action {
+  text-align: right;
+}
+
+.btn.sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--cyan);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+  font-family: var(--pixel);
+  transition: all 0.2s;
+}
+
+.btn.sm:hover {
+  background: var(--magenta);
+  box-shadow: 0 0 12px var(--magenta);
+}

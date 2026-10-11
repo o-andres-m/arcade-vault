@@ -3,7 +3,7 @@
 import { use, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { GAMES } from "@/lib/data";
-import { seededScores } from "@/lib/utils";
+import { Leaderboard } from "@/components/leaderboard/Leaderboard";
 
 interface PageProps {
   params: Promise<{
@@ -18,12 +18,6 @@ export default function JuegoDetailPage({ params }: PageProps) {
   const game = useMemo(() => {
     return GAMES.find((g) => g.id === id);
   }, [id]);
-
-  const leaderboard = useMemo(() => {
-    if (!game) return [];
-    const seed = game.id.length * 17 + 3;
-    return seededScores(seed, 10);
-  }, [game]);
 
   if (!game) {
     return (
@@ -89,27 +83,7 @@ export default function JuegoDetailPage({ params }: PageProps) {
         </div>
 
         {/* Columna derecha: Leaderboard */}
-        <div className="leaderboard">
-          <h3>◆ MEJORES PUNTUACIONES</h3>
-          {leaderboard.map((entry) => (
-            <div
-              key={entry.rank}
-              className={`lb-row ${
-                entry.rank === 1
-                  ? "top1"
-                  : entry.rank === 2
-                    ? "top2"
-                    : entry.rank === 3
-                      ? "top3"
-                      : ""
-              }`}
-            >
-              <span className="rk">#{entry.rank}</span>
-              <span className="pl">{entry.name}</span>
-              <span className="sc">{entry.score.toLocaleString()}</span>
-            </div>
-          ))}
-        </div>
+        <Leaderboard gameId={id} />
       </div>
     </main>
   );
