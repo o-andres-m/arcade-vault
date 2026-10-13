@@ -35,7 +35,7 @@ function SnakeGameComponent({ onGameOver, onPause, onScoreChange, onLivesChange,
   const gameLoopIdRef = useRef<number | null>(null);
   const callbacksRef = useRef({ onGameOver, onPause, onScoreChange, onLivesChange, onLevelChange });
   const manualPauseRef = useRef<boolean>(false);
-  const prevPauseStateRef = useRef<'paused' | 'playing'>('playing');
+  const prevPauseStateRef = useRef<'playing' | 'paused' | 'dead' | 'gameover'>('playing');
 
   useEffect(() => {
     callbacksRef.current = { onGameOver, onPause, onScoreChange, onLivesChange, onLevelChange };
