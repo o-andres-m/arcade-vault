@@ -1,6 +1,6 @@
-import { Bullet as BulletType } from '../types'
+import { Bullet as BulletType } from '../asteroids/types'
 import { wrap } from '../physics/utils'
-import { CANVAS_WIDTH, CANVAS_HEIGHT, BULLET_SPEED, BULLET_TTL, BULLET_RADIUS } from '../constants'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, BULLET_SPEED, BULLET_TTL, BULLET_RADIUS } from '../asteroids/constants'
 
 export class Bullet implements BulletType {
   x: number

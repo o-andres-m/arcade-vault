@@ -1,6 +1,6 @@
-import { GameState, Collision } from '../types'
+import { GameState, Collision } from '../asteroids/types'
 import { distancePoints } from './utils'
-import { SHIP_COLLISION_RADIUS_MULTIPLIER } from '../constants'
+import { SHIP_COLLISION_RADIUS_MULTIPLIER } from '../asteroids/constants'
 
 export const detectCollisions = (state: GameState): Collision[] => {
   const collisions: Collision[] = []
