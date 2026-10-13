@@ -1,4 +1,4 @@
-import { GameState, InputState, Collision } from '../types'
+import { GameState, InputState, Collision } from '../asteroids/types'
 import { Ship } from '../entities/Ship'
 import { Asteroid } from '../entities/Asteroid'
 import { Particle } from '../entities/Particle'
@@ -16,7 +16,7 @@ import {
   PARTICLES_PER_EXPLOSION,
   PARTICLES_ON_SHIP_DEATH,
   TRIPLE_SPREAD,
-} from '../constants'
+} from '../asteroids/constants'
 import { random, distance, distancePoints } from '../physics/utils'
 import { detectCollisions } from '../physics/collision'
 

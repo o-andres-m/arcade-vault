@@ -1,6 +1,6 @@
-import { PowerUp as PowerUpType } from '../types'
+import { PowerUp as PowerUpType } from '../asteroids/types'
 import { wrap, random } from '../physics/utils'
-import { CANVAS_WIDTH, CANVAS_HEIGHT, POWERUP_TTL, POWERUP_RADIUS } from '../constants'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, POWERUP_TTL, POWERUP_RADIUS } from '../asteroids/constants'
 
 export class PowerUp implements PowerUpType {
   x: number

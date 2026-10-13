@@ -1,4 +1,4 @@
-import { Asteroid as AsteroidType, AsteroidSize } from '../types'
+import { Asteroid as AsteroidType, AsteroidSize } from '../asteroids/types'
 import { wrap, random, randomInt } from '../physics/utils'
 import {
   CANVAS_WIDTH,
@@ -9,7 +9,7 @@ import {
   ASTEROID_VERTEX_MIN,
   ASTEROID_VERTEX_MAX,
   ASTEROID_VERTEX_RADIUS_VARIATION,
-} from '../constants'
+} from '../asteroids/constants'
 
 export class Asteroid implements AsteroidType {
   x: number

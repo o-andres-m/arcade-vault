@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { GameState, InputState } from '@/lib/game/types'
+import { GameState, InputState } from '@/lib/game/asteroids/types'
 import { initializeGame, updateGameState } from '@/lib/game/engine/gameEngine'
 import { drawGame } from '@/lib/game/renderer/draw'
-import { CANVAS_WIDTH, CANVAS_HEIGHT, MAX_DELTA_TIME } from '@/lib/game/constants'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, MAX_DELTA_TIME } from '@/lib/game/asteroids/constants'
 
 interface AsteroidsGameProps {
   onGameOver?: (score: number) => void

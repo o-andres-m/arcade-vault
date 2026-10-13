@@ -1,6 +1,6 @@
-import { Particle as ParticleType } from '../types'
+import { Particle as ParticleType } from '../asteroids/types'
 import { random } from '../physics/utils'
-import { PARTICLE_MIN_SPEED, PARTICLE_MAX_SPEED } from '../constants'
+import { PARTICLE_MIN_SPEED, PARTICLE_MAX_SPEED } from '../asteroids/constants'
 
 export class Particle implements ParticleType {
   x: number

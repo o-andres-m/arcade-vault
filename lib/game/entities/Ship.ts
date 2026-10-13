@@ -1,4 +1,4 @@
-import { Ship as ShipType } from '../types'
+import { Ship as ShipType } from '../asteroids/types'
 import { wrap, random } from '../physics/utils'
 import {
   CANVAS_WIDTH,
@@ -9,7 +9,7 @@ import {
   SHIP_INVINCIBILITY_TIME,
   SHIP_RADIUS,
   SHIP_NOSE_LENGTH,
-} from '../constants'
+} from '../asteroids/constants'
 import { Bullet } from './Bullet'
 
 export class Ship implements ShipType {
