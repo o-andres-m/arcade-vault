@@ -1,5 +1,5 @@
-import { GameState } from '../types'
-import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../constants'
+import { GameState } from '../asteroids/types'
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../asteroids/constants'
 
 const drawLifeIcon = (ctx: CanvasRenderingContext2D, x: number, y: number): void => {
   ctx.save()
