@@ -18,14 +18,20 @@ export function checkBallPaddleCollision(ball: Ball, paddle: Paddle): boolean {
   const radiusSquared = ballRadius * ballRadius
 
   if (distSquared < radiusSquared) {
-    // Bounce logic: reverse vertical velocity and adjust position
-    ball.vy = -Math.abs(ball.vy)
     ball.y = paddle.y - ball.h
 
-    // Add horizontal component based on where ball hits paddle
-    const hitPos = (ballCenterX - paddle.x) / paddle.w // 0 to 1
-    const maxHorizontalVelocity = Math.abs(ball.vx) * 0.5
-    ball.vx = (hitPos - 0.5) * maxHorizontalVelocity * 2
+    // Calculate hit position on paddle (0 = left, 1 = right)
+    const hitPos = Math.max(0, Math.min(1, (ballCenterX - paddle.x) / paddle.w))
+
+    // Angle based on hit position: -75° to +75° from vertical
+    // Left edge (-75°) = vx negative, Right edge (+75°) = vx positive
+    const angleMultiplier = (hitPos - 0.5) * 2 // -1 to 1
+    const baseSpeed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy)
+
+    // Use angle to set velocities (55° angle range for more dynamic bounces)
+    const angle = angleMultiplier * (Math.PI / 4) // ±45°
+    ball.vx = Math.sin(angle) * baseSpeed
+    ball.vy = -Math.abs(Math.cos(angle) * baseSpeed) // Always upward
 
     return true
   }

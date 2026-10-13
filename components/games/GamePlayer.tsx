@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Game, Score } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 import { saveScore } from "@/lib/supabase/scores";
 import { AsteroidsGame } from "./AsteroidsGame";
-import { ArkanoidGame } from "./ArkanoidGame";
+import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import styles from "./GamePlayer.module.css";
 
 interface GamePlayerProps {
@@ -24,6 +24,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const arkanoidRef = useRef<ArkanoidGameHandle>(null);
 
   // Para juegos específicos
   const isAsteroidsGame = game.id === 'rocas';
@@ -68,6 +69,22 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const handleArkanoidGameEnd = (finalScore: number) => {
     setScore(finalScore);
     setOver(true);
+  };
+
+  const handleArkanoidScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
+  const handleArkanoidLivesChange = (newLives: number) => {
+    setLives(newLives);
+  };
+
+  const handleArkanoidLevelChange = (newLevel: number) => {
+    setLevel(newLevel);
+  };
+
+  const handleArkanoidPausedChange = (isPaused: boolean) => {
+    setPaused(isPaused);
   };
 
   const handleEnd = () => {
@@ -150,7 +167,17 @@ export function GamePlayer({ game }: GamePlayerProps) {
         </div>
 
         <div className={styles.hudActions}>
-          <button className="btn" onClick={() => setPaused(!paused)} disabled={over}>
+          <button
+            className="btn"
+            onClick={() => {
+              if (isArkanoidGame && arkanoidRef.current) {
+                arkanoidRef.current.setPaused(!paused);
+              } else {
+                setPaused(!paused);
+              }
+            }}
+            disabled={over}
+          >
             {paused ? "▶ REANUDAR" : "❚❚ PAUSA"}
           </button>
           <button className="btn magenta" onClick={handleEnd} disabled={over}>
@@ -175,7 +202,14 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onLevelChange={handleAsteroidsLevelChange}
               />
             ) : isArkanoidGame ? (
-              <ArkanoidGame onGameEnd={handleArkanoidGameEnd} />
+              <ArkanoidGame
+                ref={arkanoidRef}
+                onGameEnd={handleArkanoidGameEnd}
+                onScoreChange={handleArkanoidScoreChange}
+                onLivesChange={handleArkanoidLivesChange}
+                onLevelChange={handleArkanoidLevelChange}
+                onPausedChange={handleArkanoidPausedChange}
+              />
             ) : (
               <>
                 <div className={styles.gridFloor} />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useImperativeHandle, forwardRef } from 'react'
 import { GameState } from '@/lib/game/arkanoid/types'
 import {
   initializeGame,
@@ -12,17 +12,60 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@/lib/game/arkanoid/constants'
 import { useAuth } from '@/hooks/useAuth'
 import { saveScore } from '@/lib/supabase/scores'
 
-interface ArkanoidGameProps {
-  onGameEnd?: (score: number) => void
+export interface ArkanoidGameHandle {
+  setPaused: (paused: boolean) => void
 }
 
-export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
+interface ArkanoidGameProps {
+  onGameEnd?: (score: number) => void
+  onScoreChange?: (score: number) => void
+  onLivesChange?: (lives: number) => void
+  onLevelChange?: (level: number) => void
+  onPausedChange?: (paused: boolean) => void
+}
+
+export const ArkanoidGame = forwardRef<ArkanoidGameHandle, ArkanoidGameProps>(function ArkanoidGameComponent({
+  onGameEnd,
+  onScoreChange,
+  onLivesChange,
+  onLevelChange,
+  onPausedChange
+}, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameStateRef = useRef<GameState | null>(null)
   const gameLoopRef = useRef<number | null>(null)
   const keysRef = useRef<Record<string, boolean>>({})
   const lastGameStateRef = useRef<'playing' | 'gameover' | 'win' | null>(null)
   const { user } = useAuth()
+  const lastScoreRef = useRef(0)
+  const lastLivesRef = useRef(3)
+  const lastLevelRef = useRef(1)
+  const lastPausedRef = useRef(false)
+  const scoreChangeCallbackRef = useRef(onScoreChange)
+  const livesChangeCallbackRef = useRef(onLivesChange)
+  const levelChangeCallbackRef = useRef(onLevelChange)
+  const pausedChangeCallbackRef = useRef(onPausedChange)
+  const onGameEndCallbackRef = useRef(onGameEnd)
+
+  useEffect(() => {
+    scoreChangeCallbackRef.current = onScoreChange
+    livesChangeCallbackRef.current = onLivesChange
+    levelChangeCallbackRef.current = onLevelChange
+    pausedChangeCallbackRef.current = onPausedChange
+    onGameEndCallbackRef.current = onGameEnd
+  }, [onScoreChange, onLivesChange, onLevelChange, onPausedChange, onGameEnd])
+
+  useImperativeHandle(ref, () => ({
+    setPaused: (paused: boolean) => {
+      if (gameStateRef.current && gameStateRef.current.gameState === 'playing') {
+        if (paused !== gameStateRef.current.isPaused) {
+          togglePause(gameStateRef.current)
+          lastPausedRef.current = gameStateRef.current.isPaused
+          pausedChangeCallbackRef.current?.(gameStateRef.current.isPaused)
+        }
+      }
+    }
+  }), [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -34,6 +77,10 @@ export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
     // Initialize game
     gameStateRef.current = initializeGame()
     lastGameStateRef.current = null
+    lastScoreRef.current = 0
+    lastLivesRef.current = 3
+    lastLevelRef.current = 1
+    lastPausedRef.current = false
 
     // Input handling
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,6 +92,8 @@ export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
         e.preventDefault()
         if (gameStateRef.current) {
           togglePause(gameStateRef.current)
+          lastPausedRef.current = gameStateRef.current.isPaused
+          pausedChangeCallbackRef.current?.(gameStateRef.current.isPaused)
         }
       }
 
@@ -75,6 +124,27 @@ export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
         updateGame(gameStateRef.current, dt, keysRef.current)
         drawGame(ctx, gameStateRef.current)
 
+        // Sync state updates with parent
+        if (gameStateRef.current.score !== lastScoreRef.current) {
+          lastScoreRef.current = gameStateRef.current.score
+          scoreChangeCallbackRef.current?.(gameStateRef.current.score)
+        }
+
+        if (gameStateRef.current.lives !== lastLivesRef.current) {
+          lastLivesRef.current = gameStateRef.current.lives
+          livesChangeCallbackRef.current?.(gameStateRef.current.lives)
+        }
+
+        if (gameStateRef.current.currentLevel !== lastLevelRef.current) {
+          lastLevelRef.current = gameStateRef.current.currentLevel
+          levelChangeCallbackRef.current?.(gameStateRef.current.currentLevel)
+        }
+
+        if (gameStateRef.current.isPaused !== lastPausedRef.current) {
+          lastPausedRef.current = gameStateRef.current.isPaused
+          pausedChangeCallbackRef.current?.(gameStateRef.current.isPaused)
+        }
+
         // Handle game end
         if (
           gameStateRef.current.gameState !== 'playing' &&
@@ -82,7 +152,7 @@ export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
         ) {
           lastGameStateRef.current = gameStateRef.current.gameState
           handleSaveScore(gameStateRef.current.score)
-          onGameEnd?.(gameStateRef.current.score)
+          onGameEndCallbackRef.current?.(gameStateRef.current.score)
         }
       }
 
@@ -98,7 +168,7 @@ export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
         cancelAnimationFrame(gameLoopRef.current)
       }
     }
-  }, [onGameEnd])
+  }, [])
 
   const handleSaveScore = async (score: number) => {
     if (!user) return
@@ -121,4 +191,4 @@ export function ArkanoidGame({ onGameEnd }: ArkanoidGameProps) {
       />
     </div>
   )
-}
+})
