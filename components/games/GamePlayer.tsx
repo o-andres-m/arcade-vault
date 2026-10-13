@@ -6,6 +6,7 @@ import { Game, Score } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 import { saveScore } from "@/lib/supabase/scores";
 import { AsteroidsGame } from "./AsteroidsGame";
+import { ArkanoidGame } from "./ArkanoidGame";
 import styles from "./GamePlayer.module.css";
 
 interface GamePlayerProps {
@@ -24,19 +25,20 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Para juego Asteroides
+  // Para juegos específicos
   const isAsteroidsGame = game.id === 'rocas';
+  const isArkanoidGame = game.id === 'arkanoid';
 
-  // Auto-incremento de puntuación (solo para juegos no-Asteroides)
+  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid)
   useEffect(() => {
-    if (isAsteroidsGame || paused || over) return;
+    if (isAsteroidsGame || isArkanoidGame || paused || over) return;
 
     const interval = setInterval(() => {
       setScore((prev) => prev + Math.floor(Math.random() * 50 + 10));
     }, 220);
 
     return () => clearInterval(interval);
-  }, [isAsteroidsGame, paused, over]);
+  }, [isAsteroidsGame, isArkanoidGame, paused, over]);
 
   // Subir nivel cada 2500 puntos
   useEffect(() => {
@@ -63,6 +65,11 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setLevel(newLevel);
   };
 
+  const handleArkanoidGameEnd = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -76,9 +83,9 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const playerName = name.trim().toUpperCase().slice(0, 10) || "PLAYER1";
 
     try {
-      // Si es juego Asteroides y está logueado, guardar en Supabase
-      if (isAsteroidsGame && user) {
-        await saveScore('rocas', score);
+      // Si es juego Asteroides/Arkanoid y está logueado, guardar en Supabase
+      if ((isAsteroidsGame || isArkanoidGame) && user) {
+        await saveScore(game.id, score);
       } else {
         // Guardar en localStorage
         const newScore: Score = {
@@ -167,6 +174,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onLivesChange={handleAsteroidsLivesChange}
                 onLevelChange={handleAsteroidsLevelChange}
               />
+            ) : isArkanoidGame ? (
+              <ArkanoidGame onGameEnd={handleArkanoidGameEnd} />
             ) : (
               <>
                 <div className={styles.gridFloor} />
@@ -211,7 +220,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
             {!saved ? (
               <>
                 <div className={styles.inputRow}>
-                  {!isAsteroidsGame && (
+                  {!isAsteroidsGame && !isArkanoidGame && (
                     <input
                       type="text"
                       placeholder="TU NOMBRE"

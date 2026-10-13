@@ -68,6 +68,17 @@ export const GAMES: Game[] = [
     plays: "15.6K",
   },
   {
+    id: "arkanoid",
+    title: "ARKANOID",
+    short: "Rebota la pelota y destruye los bloques.",
+    long: "El legendario juego de bloque-romper. Controla un paddle para rebotar la pelota, destruye bloques de colores y avanza por 5 niveles. ¿Podrás conquistarlos todos?",
+    cat: "ARCADE",
+    cover: "cover-bricks",
+    color: "yellow",
+    best: 0,
+    plays: "0",
+  },
+  {
     id: "ranaria",
     title: "RANARIA",
     short: "Cruza la autopista de pixeles.",
