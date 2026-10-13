@@ -2,17 +2,6 @@ import { Game, GameCategory } from "@/types";
 
 export const GAMES: Game[] = [
   {
-    id: "bloque-buster",
-    title: "BLOQUE BUSTER",
-    short: "Rebota la pelota y destruye muros de neón.",
-    long: "Pilota una nave-paleta y rebota un núcleo de plasma para pulverizar muros de bloques cromáticos. Cada nivel reorganiza la grilla en patrones imposibles. ¿Hasta dónde llegará tu racha?",
-    cat: "ARCADE",
-    cover: "cover-bricks",
-    color: "cyan",
-    best: 28450,
-    plays: "12.4K",
-  },
-  {
     id: "caida",
     title: "CAÍDA",
     short: "Encaja las piezas antes de que el techo te aplaste.",
@@ -66,6 +55,17 @@ export const GAMES: Game[] = [
     color: "cyan",
     best: 41200,
     plays: "15.6K",
+  },
+  {
+    id: "arkanoid",
+    title: "ARKANOID",
+    short: "Rebota la pelota y destruye los bloques.",
+    long: "El legendario juego de bloque-romper. Controla un paddle para rebotar la pelota, destruye bloques de colores y avanza por 5 niveles. ¿Podrás conquistarlos todos?",
+    cat: "ARCADE",
+    cover: "cover-bricks",
+    color: "yellow",
+    best: 0,
+    plays: "0",
   },
   {
     id: "ranaria",

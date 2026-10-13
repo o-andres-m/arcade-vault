@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Game, Score } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 import { saveScore } from "@/lib/supabase/scores";
 import { AsteroidsGame } from "./AsteroidsGame";
+import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import styles from "./GamePlayer.module.css";
 
 interface GamePlayerProps {
@@ -23,20 +24,22 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const arkanoidRef = useRef<ArkanoidGameHandle>(null);
 
-  // Para juego Asteroides
+  // Para juegos específicos
   const isAsteroidsGame = game.id === 'rocas';
+  const isArkanoidGame = game.id === 'arkanoid';
 
-  // Auto-incremento de puntuación (solo para juegos no-Asteroides)
+  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid)
   useEffect(() => {
-    if (isAsteroidsGame || paused || over) return;
+    if (isAsteroidsGame || isArkanoidGame || paused || over) return;
 
     const interval = setInterval(() => {
       setScore((prev) => prev + Math.floor(Math.random() * 50 + 10));
     }, 220);
 
     return () => clearInterval(interval);
-  }, [isAsteroidsGame, paused, over]);
+  }, [isAsteroidsGame, isArkanoidGame, paused, over]);
 
   // Subir nivel cada 2500 puntos
   useEffect(() => {
@@ -63,6 +66,27 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setLevel(newLevel);
   };
 
+  const handleArkanoidGameEnd = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
+  };
+
+  const handleArkanoidScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
+  const handleArkanoidLivesChange = (newLives: number) => {
+    setLives(newLives);
+  };
+
+  const handleArkanoidLevelChange = (newLevel: number) => {
+    setLevel(newLevel);
+  };
+
+  const handleArkanoidPausedChange = (isPaused: boolean) => {
+    setPaused(isPaused);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -76,9 +100,9 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const playerName = name.trim().toUpperCase().slice(0, 10) || "PLAYER1";
 
     try {
-      // Si es juego Asteroides y está logueado, guardar en Supabase
-      if (isAsteroidsGame && user) {
-        await saveScore('rocas', score);
+      // Si es juego Asteroides/Arkanoid y está logueado, guardar en Supabase
+      if ((isAsteroidsGame || isArkanoidGame) && user) {
+        await saveScore(game.id, score);
       } else {
         // Guardar en localStorage
         const newScore: Score = {
@@ -143,7 +167,17 @@ export function GamePlayer({ game }: GamePlayerProps) {
         </div>
 
         <div className={styles.hudActions}>
-          <button className="btn" onClick={() => setPaused(!paused)} disabled={over}>
+          <button
+            className="btn"
+            onClick={() => {
+              if (isArkanoidGame && arkanoidRef.current) {
+                arkanoidRef.current.setPaused(!paused);
+              } else {
+                setPaused(!paused);
+              }
+            }}
+            disabled={over}
+          >
             {paused ? "▶ REANUDAR" : "❚❚ PAUSA"}
           </button>
           <button className="btn magenta" onClick={handleEnd} disabled={over}>
@@ -166,6 +200,15 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onScoreChange={handleAsteroidsScoreChange}
                 onLivesChange={handleAsteroidsLivesChange}
                 onLevelChange={handleAsteroidsLevelChange}
+              />
+            ) : isArkanoidGame ? (
+              <ArkanoidGame
+                ref={arkanoidRef}
+                onGameEnd={handleArkanoidGameEnd}
+                onScoreChange={handleArkanoidScoreChange}
+                onLivesChange={handleArkanoidLivesChange}
+                onLevelChange={handleArkanoidLevelChange}
+                onPausedChange={handleArkanoidPausedChange}
               />
             ) : (
               <>
@@ -211,7 +254,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
             {!saved ? (
               <>
                 <div className={styles.inputRow}>
-                  {!isAsteroidsGame && (
+                  {!isAsteroidsGame && !isArkanoidGame && (
                     <input
                       type="text"
                       placeholder="TU NOMBRE"

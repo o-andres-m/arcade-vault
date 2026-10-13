@@ -49,7 +49,7 @@ export interface RecentScore {
 }
 
 export function generateRecentActivity(count: number): RecentScore[] {
-  const games = ["Caída", "Glotón", "Invasores", "Rocas", "Bloque Buster", "Serpentina", "Ranaria"];
+  const games = ["Caída", "Glotón", "Invasores", "Rocas", "Arkanoid", "Serpentina", "Ranaria"];
   const players = ["NEONFOX", "PX_KAI", "Z3R0COOL", "VAULT_07", "GLITCHA", "ARKADYA", "CYBER_LU"];
   const colors = ["magenta", "yellow", "green", "cyan"];
 
