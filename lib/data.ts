@@ -2,17 +2,6 @@ import { Game, GameCategory } from "@/types";
 
 export const GAMES: Game[] = [
   {
-    id: "caida",
-    title: "CAÍDA",
-    short: "Encaja las piezas antes de que el techo te aplaste.",
-    long: "Piezas geométricas descienden desde la oscuridad. Rótalas, encástralas y limpia líneas para sobrevivir. La velocidad aumenta sin piedad cada 10 líneas.",
-    cat: "PUZZLE",
-    cover: "cover-tetro",
-    color: "magenta",
-    best: 184220,
-    plays: "31.8K",
-  },
-  {
     id: "gloton",
     title: "GLOTÓN",
     short: "Devora puntos y escapa de los fantasmas.",
@@ -66,6 +55,17 @@ export const GAMES: Game[] = [
     color: "green",
     best: 0,
     plays: "0",
+  },
+  {
+    id: "tetris",
+    title: "TETRIS",
+    short: "Encaja bloques y completa líneas.",
+    long: "Piezas geométricas descienden desde arriba. Rótalas y encájalas para completar líneas horizontales. La velocidad aumenta cada 10 líneas completadas.",
+    cat: "PUZZLE",
+    cover: "cover-tetro",
+    color: "cyan",
+    best: 184220,
+    plays: "31.8K",
   },
   {
     id: "ranaria",

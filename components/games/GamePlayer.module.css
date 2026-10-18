@@ -59,6 +59,17 @@
   flex-wrap: wrap;
 }
 
+.colorSelect {
+  background-color: var(--bg-2);
+  color: var(--ink);
+}
+
+.colorSelect option {
+  background-color: #000;
+  color: #fff;
+  font-family: var(--pixel);
+}
+
 /* CRT */
 .crt {
   position: relative;
