@@ -8,6 +8,8 @@ import { saveScore } from "@/lib/supabase/scores";
 import { AsteroidsGame } from "./AsteroidsGame";
 import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import SnakeGame, { SnakeGameHandle } from "./SnakeGame";
+import TetrisGame from "./TetrisGame";
+import type { ColorPalette } from "@/lib/game/tetris/types";
 import styles from "./GamePlayer.module.css";
 
 interface GamePlayerProps {
@@ -25,6 +27,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [tetrisResetKey, setTetrisResetKey] = useState(0);
+  const [tetrisColorPalette, setTetrisColorPalette] = useState<ColorPalette>("retro");
   const arkanoidRef = useRef<ArkanoidGameHandle>(null);
   const snakeRef = useRef<SnakeGameHandle>(null);
 
@@ -32,22 +36,23 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const isAsteroidsGame = game.id === 'rocas';
   const isArkanoidGame = game.id === 'arkanoid';
   const isSnakeGame = game.id === 'snake';
+  const isTetrisGame = game.id === 'tetris';
 
   useEffect(() => {
     const initialLives = isSnakeGame ? 5 : 3;
     setLives(initialLives);
   }, [isSnakeGame]);
 
-  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake)
+  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris)
   useEffect(() => {
-    if (isAsteroidsGame || isArkanoidGame || isSnakeGame || paused || over) return;
+    if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || paused || over) return;
 
     const interval = setInterval(() => {
       setScore((prev) => prev + Math.floor(Math.random() * 50 + 10));
     }, 220);
 
     return () => clearInterval(interval);
-  }, [isAsteroidsGame, isArkanoidGame, isSnakeGame, paused, over]);
+  }, [isAsteroidsGame, isArkanoidGame, isSnakeGame, isTetrisGame, paused, over]);
 
   // Subir nivel cada 2500 puntos
   useEffect(() => {
@@ -116,6 +121,15 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setLevel(newLevel);
   };
 
+  const handleTetrisGameOver = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
+  };
+
+  const handleTetrisScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -129,8 +143,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const playerName = name.trim().toUpperCase().slice(0, 10) || "PLAYER1";
 
     try {
-      // Si es juego Asteroides/Arkanoid/Snake y está logueado, guardar en Supabase
-      if ((isAsteroidsGame || isArkanoidGame || isSnakeGame) && user) {
+      // Si es juego Asteroides/Arkanoid/Snake/Tetris y está logueado, guardar en Supabase
+      if ((isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame) && user) {
         await saveScore(game.id, score);
       } else {
         // Guardar en localStorage
@@ -169,6 +183,9 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setOver(false);
     setName("");
     setSaved(false);
+    if (isTetrisGame) {
+      setTetrisResetKey(prev => prev + 1);
+    }
   };
 
   const handleBackToVault = () => {
@@ -187,16 +204,32 @@ export function GamePlayer({ game }: GamePlayerProps) {
           <div className={styles.label}>PUNTUACIÓN</div>
           <div className={`${styles.value} ${styles.cyan}`}>{score.toLocaleString()}</div>
         </div>
-        <div className={styles.hudStat}>
-          <div className={styles.label}>VIDAS</div>
-          <div className={`${styles.value} ${styles.magenta}`}>{"❤".repeat(lives)}</div>
-        </div>
-        <div className={styles.hudStat}>
-          <div className={styles.label}>NIVEL</div>
-          <div className={`${styles.value} ${styles.yellow}`}>{level}</div>
-        </div>
+        {!isTetrisGame && (
+          <>
+            <div className={styles.hudStat}>
+              <div className={styles.label}>VIDAS</div>
+              <div className={`${styles.value} ${styles.magenta}`}>{"❤".repeat(lives)}</div>
+            </div>
+            <div className={styles.hudStat}>
+              <div className={styles.label}>NIVEL</div>
+              <div className={`${styles.value} ${styles.yellow}`}>{level}</div>
+            </div>
+          </>
+        )}
 
         <div className={styles.hudActions}>
+          {isTetrisGame && (
+            <select
+              value={tetrisColorPalette}
+              onChange={(e) => setTetrisColorPalette(e.target.value as ColorPalette)}
+              className={`btn ${styles.colorSelect}`}
+              title="Select color palette"
+            >
+              <option value="neon">🟢 Neon</option>
+              <option value="pastel">🎨 Pastel</option>
+              <option value="retro">✨ Retro</option>
+            </select>
+          )}
           <button
             className="btn"
             onClick={() => {
@@ -251,6 +284,15 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onLivesChange={handleSnakeLivesChange}
                 onLevelChange={handleSnakeLevelChange}
               />
+            ) : isTetrisGame ? (
+              <TetrisGame
+                key={tetrisResetKey}
+                onGameOver={handleTetrisGameOver}
+                isPaused={paused}
+                onScoreChange={handleTetrisScoreChange}
+                colorPalette={tetrisColorPalette}
+                onColorPaletteChange={setTetrisColorPalette}
+              />
             ) : (
               <>
                 <div className={styles.gridFloor} />
@@ -295,7 +337,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
             {!saved ? (
               <>
                 <div className={styles.inputRow}>
-                  {!isAsteroidsGame && !isArkanoidGame && !isSnakeGame && (
+                  {!isAsteroidsGame && !isArkanoidGame && !isSnakeGame && !isTetrisGame && (
                     <input
                       type="text"
                       placeholder="TU NOMBRE"

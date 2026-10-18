@@ -680,15 +680,16 @@ a {
 .cover-snake::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 70% 50%, var(--magenta) 0 6px, transparent 7px),
-    linear-gradient(90deg, var(--green) 0 40px, transparent 40px) 20% 50% / 200px 12px no-repeat,
-    linear-gradient(90deg, var(--green) 0 12px, transparent 12px) calc(20% + 40px) calc(50% - 12px) / 12px 12px
-      no-repeat,
-    linear-gradient(90deg, var(--green) 0 12px, transparent 12px) calc(20% + 28px) calc(50% - 12px) / 12px 12px
-      no-repeat;
-  filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.6));
+  inset: 20% 30% 20% 30%;
+  background:
+    radial-gradient(circle at 50% 20%, var(--yellow) 0 12px, transparent 13px),
+    radial-gradient(circle at 20% 50%, var(--green) 0 14px, transparent 15px),
+    radial-gradient(circle at 40% 60%, var(--green) 0 12px, transparent 13px),
+    radial-gradient(circle at 55% 70%, var(--green) 0 12px, transparent 13px),
+    radial-gradient(circle at 70% 65%, var(--green) 0 12px, transparent 13px),
+    radial-gradient(circle at 80% 50%, var(--green) 0 12px, transparent 13px),
+    radial-gradient(circle at 75% 35%, var(--green) 0 10px, transparent 11px);
+  filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8));
 }
 
 .cover-glot {
