@@ -29,6 +29,9 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [tetrisResetKey, setTetrisResetKey] = useState(0);
   const [tetrisColorPalette, setTetrisColorPalette] = useState<ColorPalette>("retro");
+  const [asteroidsColorPalette, setAsteroidsColorPalette] = useState<ColorPalette>("retro");
+  const [arkanoidColorPalette, setArkanoidColorPalette] = useState<ColorPalette>("retro");
+  const [snakeColorPalette, setSnakeColorPalette] = useState<ColorPalette>("retro");
   const arkanoidRef = useRef<ArkanoidGameHandle>(null);
   const snakeRef = useRef<SnakeGameHandle>(null);
 
@@ -230,6 +233,42 @@ export function GamePlayer({ game }: GamePlayerProps) {
               <option value="retro">✨ Retro</option>
             </select>
           )}
+          {isAsteroidsGame && (
+            <select
+              value={asteroidsColorPalette}
+              onChange={(e) => setAsteroidsColorPalette(e.target.value as ColorPalette)}
+              className={`btn ${styles.colorSelect}`}
+              title="Select color palette"
+            >
+              <option value="neon">🟢 Neon</option>
+              <option value="pastel">🎨 Pastel</option>
+              <option value="retro">✨ Retro</option>
+            </select>
+          )}
+          {isArkanoidGame && (
+            <select
+              value={arkanoidColorPalette}
+              onChange={(e) => setArkanoidColorPalette(e.target.value as ColorPalette)}
+              className={`btn ${styles.colorSelect}`}
+              title="Select color palette"
+            >
+              <option value="neon">🟢 Neon</option>
+              <option value="pastel">🎨 Pastel</option>
+              <option value="retro">✨ Retro</option>
+            </select>
+          )}
+          {isSnakeGame && (
+            <select
+              value={snakeColorPalette}
+              onChange={(e) => setSnakeColorPalette(e.target.value as ColorPalette)}
+              className={`btn ${styles.colorSelect}`}
+              title="Select color palette"
+            >
+              <option value="neon">🟢 Neon</option>
+              <option value="pastel">🎨 Pastel</option>
+              <option value="retro">✨ Retro</option>
+            </select>
+          )}
           <button
             className="btn"
             onClick={() => {
@@ -265,6 +304,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onScoreChange={handleAsteroidsScoreChange}
                 onLivesChange={handleAsteroidsLivesChange}
                 onLevelChange={handleAsteroidsLevelChange}
+                colorPalette={asteroidsColorPalette}
+                onColorPaletteChange={setAsteroidsColorPalette}
               />
             ) : isArkanoidGame ? (
               <ArkanoidGame
@@ -274,6 +315,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onLivesChange={handleArkanoidLivesChange}
                 onLevelChange={handleArkanoidLevelChange}
                 onPausedChange={handleArkanoidPausedChange}
+                colorPalette={arkanoidColorPalette}
+                onColorPaletteChange={setArkanoidColorPalette}
               />
             ) : isSnakeGame ? (
               <SnakeGame
@@ -283,6 +326,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onScoreChange={handleSnakeScoreChange}
                 onLivesChange={handleSnakeLivesChange}
                 onLevelChange={handleSnakeLevelChange}
+                colorPalette={snakeColorPalette}
+                onColorPaletteChange={setSnakeColorPalette}
               />
             ) : isTetrisGame ? (
               <TetrisGame

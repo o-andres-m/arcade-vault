@@ -30,21 +30,22 @@ export class PowerUp implements PowerUpType {
     if (this.ttl <= 0) this.dead = true
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, colors?: { powerup: string }): void {
     // Blink effect in last 2 seconds
     if (this.ttl < 2 && Math.floor(this.ttl * 8) % 2 === 0) return
 
+    const powerupColor = colors?.powerup || '#0ff'
     const pulse = 0.85 + Math.sin(performance.now() / 150) * 0.15
     ctx.save()
     ctx.translate(this.x, this.y)
     ctx.rotate(Math.PI / 4)
-    ctx.strokeStyle = '#0ff'
+    ctx.strokeStyle = powerupColor
     ctx.lineWidth = 2
     const r = this.radius * pulse
     ctx.strokeRect(-r, -r, r * 2, r * 2)
     ctx.restore()
 
-    ctx.fillStyle = '#0ff'
+    ctx.fillStyle = powerupColor
     ctx.font = 'bold 12px monospace'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'

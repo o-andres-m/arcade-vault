@@ -1,19 +1,21 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GameState, InputState } from '@/lib/game/asteroids/types'
 import { initializeGame, updateGameState } from '@/lib/game/engine/gameEngine'
 import { drawGame } from '@/lib/game/renderer/draw'
-import { CANVAS_WIDTH, CANVAS_HEIGHT, MAX_DELTA_TIME } from '@/lib/game/asteroids/constants'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, MAX_DELTA_TIME, COLOR_PALETTES, ColorPalette, DEFAULT_COLOR_PALETTE } from '@/lib/game/asteroids/constants'
 
 interface AsteroidsGameProps {
   onGameOver?: (score: number) => void
   onScoreChange?: (score: number) => void
   onLivesChange?: (lives: number) => void
   onLevelChange?: (level: number) => void
+  colorPalette?: ColorPalette
+  onColorPaletteChange?: (palette: ColorPalette) => void
 }
 
-export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLevelChange }: AsteroidsGameProps) => {
+export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLevelChange, colorPalette: initialColorPalette, onColorPaletteChange }: AsteroidsGameProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameStateRef = useRef<GameState>(initializeGame())
   const keysRef = useRef<Record<string, boolean>>({})
@@ -28,6 +30,32 @@ export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLeve
   const lastScoreRef = useRef(0)
   const lastLivesRef = useRef(3)
   const lastLevelRef = useRef(1)
+  const [colorPalette, setColorPalette] = useState<ColorPalette>(initialColorPalette || DEFAULT_COLOR_PALETTE)
+  const colorPaletteRef = useRef<ColorPalette>(colorPalette)
+
+  // Load color palette from localStorage
+  useEffect(() => {
+    if (!initialColorPalette) {
+      const saved = localStorage.getItem('asteroids-color-palette') as ColorPalette | null
+      if (saved && (saved === 'neon' || saved === 'pastel' || saved === 'retro')) {
+        setColorPalette(saved)
+        colorPaletteRef.current = saved
+      }
+    }
+  }, [initialColorPalette])
+
+  // Update color palette when prop changes
+  useEffect(() => {
+    if (initialColorPalette) {
+      setColorPalette(initialColorPalette)
+      colorPaletteRef.current = initialColorPalette
+    }
+  }, [initialColorPalette])
+
+  // Sync colorPaletteRef with state
+  useEffect(() => {
+    colorPaletteRef.current = colorPalette
+  }, [colorPalette])
 
   useEffect(() => {
     gameOverCallbackRef.current = onGameOver
@@ -93,8 +121,9 @@ export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLeve
       }
       updateGameState(gameStateRef.current, dt, inputState, keysRef.current, justPressedRef.current)
 
-      // Render immediately
-      drawGame(ctx, gameStateRef.current)
+      // Render immediately with color palette
+      const colors = COLOR_PALETTES[colorPaletteRef.current]
+      drawGame(ctx, gameStateRef.current, colors)
 
       // Sync state updates with parent
       if (gameStateRef.current.score !== lastScoreRef.current) {

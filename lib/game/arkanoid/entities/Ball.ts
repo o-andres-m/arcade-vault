@@ -46,8 +46,10 @@ export class Ball {
     return this.y > CANVAS_HEIGHT
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = '#ffff00'
+  draw(ctx: CanvasRenderingContext2D, colors?: { ball: string }): void {
+    const ballColor = colors?.ball || '#ffff00'
+
+    ctx.fillStyle = ballColor
     ctx.beginPath()
     ctx.arc(
       this.x + this.w / 2,

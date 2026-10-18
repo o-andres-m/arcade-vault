@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, forwardRef } from 'react';
 import { GameState, GameInput } from '@/lib/game/snake/types';
 import { initializeGame, updateGameState } from '@/lib/game/snake/engine/gameEngine';
 import { drawGame } from '@/lib/game/snake/renderer/draw';
+import { COLOR_PALETTES, ColorPalette, DEFAULT_COLOR_PALETTE } from '@/lib/game/snake/constants';
 
 export interface SnakeGameHandle {
   setPaused: (paused: boolean) => void;
@@ -15,9 +16,11 @@ interface SnakeGameProps {
   onScoreChange?: (score: number) => void;
   onLivesChange?: (lives: number) => void;
   onLevelChange?: (level: number) => void;
+  colorPalette?: ColorPalette;
+  onColorPaletteChange?: (palette: ColorPalette) => void;
 }
 
-function SnakeGameComponent({ onGameOver, onPause, onScoreChange, onLivesChange, onLevelChange }: SnakeGameProps, ref: React.Ref<SnakeGameHandle>) {
+function SnakeGameComponent({ onGameOver, onPause, onScoreChange, onLivesChange, onLevelChange, colorPalette: initialColorPalette, onColorPaletteChange }: SnakeGameProps, ref: React.Ref<SnakeGameHandle>) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameStateRef = useRef<GameState | null>(null);
   const prevScoreRef = useRef<number>(0);
@@ -36,6 +39,32 @@ function SnakeGameComponent({ onGameOver, onPause, onScoreChange, onLivesChange,
   const callbacksRef = useRef({ onGameOver, onPause, onScoreChange, onLivesChange, onLevelChange });
   const manualPauseRef = useRef<boolean>(false);
   const prevPauseStateRef = useRef<'playing' | 'paused' | 'dead' | 'gameover'>('playing');
+  const [colorPalette, setColorPalette] = useState<ColorPalette>(initialColorPalette || DEFAULT_COLOR_PALETTE);
+  const colorPaletteRef = useRef<ColorPalette>(colorPalette);
+
+  // Load color palette from localStorage
+  useEffect(() => {
+    if (!initialColorPalette) {
+      const saved = localStorage.getItem('snake-color-palette') as ColorPalette | null;
+      if (saved && (saved === 'neon' || saved === 'pastel' || saved === 'retro')) {
+        setColorPalette(saved);
+        colorPaletteRef.current = saved;
+      }
+    }
+  }, [initialColorPalette]);
+
+  // Update color palette when prop changes
+  useEffect(() => {
+    if (initialColorPalette) {
+      setColorPalette(initialColorPalette);
+      colorPaletteRef.current = initialColorPalette;
+    }
+  }, [initialColorPalette]);
+
+  // Sync colorPaletteRef with state
+  useEffect(() => {
+    colorPaletteRef.current = colorPalette;
+  }, [colorPalette]);
 
   useEffect(() => {
     callbacksRef.current = { onGameOver, onPause, onScoreChange, onLivesChange, onLevelChange };
@@ -152,7 +181,8 @@ function SnakeGameComponent({ onGameOver, onPause, onScoreChange, onLivesChange,
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx && spriteImageRef.current && gameStateRef.current) {
-          drawGame(ctx, gameStateRef.current, spriteImageRef.current);
+          const colors = COLOR_PALETTES[colorPaletteRef.current];
+          drawGame(ctx, gameStateRef.current, spriteImageRef.current, colors);
         }
       }
 

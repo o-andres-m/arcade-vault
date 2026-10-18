@@ -28,8 +28,10 @@ export class Bullet implements BulletType {
     if (this.ttl <= 0) this.dead = true
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = '#fff'
+  draw(ctx: CanvasRenderingContext2D, colors?: { bullet: string }): void {
+    const bulletColor = colors?.bullet || '#fff'
+
+    ctx.fillStyle = bulletColor
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
     ctx.fill()
