@@ -34,10 +34,13 @@ export class Paddle {
     if (this.x + this.w > CANVAS_WIDTH) this.x = CANVAS_WIDTH - this.w
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = '#00ff00'
+  draw(ctx: CanvasRenderingContext2D, colors?: { paddle: string; border: string }): void {
+    const paddleColor = colors?.paddle || '#00ff00'
+    const borderColor = colors?.border || '#fff'
+
+    ctx.fillStyle = paddleColor
     ctx.fillRect(this.x, this.y, this.w, this.h)
-    ctx.strokeStyle = '#fff'
+    ctx.strokeStyle = borderColor
     ctx.lineWidth = 1
     ctx.strokeRect(this.x, this.y, this.w, this.h)
   }

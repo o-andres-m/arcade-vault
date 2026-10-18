@@ -63,11 +63,13 @@ export class Asteroid implements AsteroidType {
     ]
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, colors?: { asteroid: string }): void {
+    const asteroidColor = colors?.asteroid || '#fff'
+
     ctx.save()
     ctx.translate(this.x, this.y)
     ctx.rotate(this.rot)
-    ctx.strokeStyle = '#fff'
+    ctx.strokeStyle = asteroidColor
     ctx.lineWidth = 1.5
     ctx.lineJoin = 'round'
     ctx.beginPath()

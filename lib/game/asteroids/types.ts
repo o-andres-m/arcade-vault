@@ -12,7 +12,7 @@ export interface Bullet extends Vector2 {
   ttl: number
   dead: boolean
   update(dt: number): void
-  draw(ctx: CanvasRenderingContext2D): void
+  draw(ctx: CanvasRenderingContext2D, colors?: any): void
 }
 
 export interface Asteroid extends Vector2 {
@@ -26,7 +26,7 @@ export interface Asteroid extends Vector2 {
   dead: boolean
   update(dt: number): void
   split(): Asteroid[]
-  draw(ctx: CanvasRenderingContext2D): void
+  draw(ctx: CanvasRenderingContext2D, colors?: any): void
 }
 
 export interface Particle extends Vector2 {
@@ -36,7 +36,7 @@ export interface Particle extends Vector2 {
   ttl: number
   dead: boolean
   update(dt: number): void
-  draw(ctx: CanvasRenderingContext2D): void
+  draw(ctx: CanvasRenderingContext2D, colors?: any): void
 }
 
 export interface PowerUp extends Vector2 {
@@ -46,7 +46,7 @@ export interface PowerUp extends Vector2 {
   ttl: number
   dead: boolean
   update(dt: number): void
-  draw(ctx: CanvasRenderingContext2D): void
+  draw(ctx: CanvasRenderingContext2D, colors?: any): void
 }
 
 export interface Ship extends Vector2 {
@@ -62,7 +62,7 @@ export interface Ship extends Vector2 {
   reset(): void
   update(dt: number, keys: Record<string, boolean>): void
   tryShoot(spreadAngle: number): Bullet[]
-  draw(ctx: CanvasRenderingContext2D): void
+  draw(ctx: CanvasRenderingContext2D, colors?: any): void
 }
 
 export type GameStatus = 'playing' | 'dead' | 'gameover'

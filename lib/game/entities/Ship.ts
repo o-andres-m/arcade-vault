@@ -81,15 +81,18 @@ export class Ship implements ShipType {
     return [new Bullet(ox, oy, this.angle)]
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, colors?: { ship: string; thruster: string }): void {
     if (this.dead) return
     // Blinking during invincibility
     if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0) return
 
+    const shipColor = colors?.ship || '#fff'
+    const thrusterColor = colors?.thruster || 'rgba(255, 130, 0, 0.85)'
+
     ctx.save()
     ctx.translate(this.x, this.y)
     ctx.rotate(this.angle)
-    ctx.strokeStyle = '#fff'
+    ctx.strokeStyle = shipColor
     ctx.lineWidth = 1.5
     ctx.lineJoin = 'round'
 
@@ -108,7 +111,7 @@ export class Ship implements ShipType {
       ctx.moveTo(-8, -4)
       ctx.lineTo(-8 - random(6, 14), 0)
       ctx.lineTo(-8, 4)
-      ctx.strokeStyle = 'rgba(255, 130, 0, 0.85)'
+      ctx.strokeStyle = thrusterColor
       ctx.stroke()
     }
 

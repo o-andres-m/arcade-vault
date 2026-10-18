@@ -1,11 +1,13 @@
 import { GameState } from '../asteroids/types'
-import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../asteroids/constants'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, COLOR_PALETTES } from '../asteroids/constants'
 
-const drawLifeIcon = (ctx: CanvasRenderingContext2D, x: number, y: number): void => {
+type ColorPalette = typeof COLOR_PALETTES[keyof typeof COLOR_PALETTES]
+
+const drawLifeIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, colors: ColorPalette): void => {
   ctx.save()
   ctx.translate(x, y)
   ctx.rotate(-Math.PI / 2)
-  ctx.strokeStyle = '#fff'
+  ctx.strokeStyle = colors.hudText
   ctx.lineWidth = 1.2
   ctx.lineJoin = 'round'
   ctx.beginPath()
@@ -18,8 +20,8 @@ const drawLifeIcon = (ctx: CanvasRenderingContext2D, x: number, y: number): void
   ctx.restore()
 }
 
-const drawHUD = (ctx: CanvasRenderingContext2D, state: GameState): void => {
-  ctx.fillStyle = '#fff'
+const drawHUD = (ctx: CanvasRenderingContext2D, state: GameState, colors: ColorPalette): void => {
+  ctx.fillStyle = colors.hudText
   ctx.font = '15px monospace'
 
   // Score
@@ -32,44 +34,44 @@ const drawHUD = (ctx: CanvasRenderingContext2D, state: GameState): void => {
 
   // Lives
   for (let i = 0; i < state.lives; i++) {
-    drawLifeIcon(ctx, CANVAS_WIDTH - 16 - i * 22, 18)
+    drawLifeIcon(ctx, CANVAS_WIDTH - 16 - i * 22, 18, colors)
   }
 
   // Triple shot indicator
   if (state.ship && state.ship.tripleShot > 0) {
     ctx.textAlign = 'left'
-    ctx.fillStyle = '#0ff'
+    ctx.fillStyle = colors.hudAccent
     ctx.fillText(`3x  ${state.ship.tripleShot.toFixed(1)}s`, 14, 46)
   }
 }
 
-const drawOverlay = (ctx: CanvasRenderingContext2D, title: string, sub: string): void => {
+const drawOverlay = (ctx: CanvasRenderingContext2D, title: string, sub: string, colors: ColorPalette): void => {
   ctx.textAlign = 'center'
-  ctx.fillStyle = '#fff'
+  ctx.fillStyle = colors.hudText
   ctx.font = 'bold 46px monospace'
   ctx.fillText(title, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 18)
   ctx.font = '18px monospace'
-  ctx.fillStyle = 'rgba(255,255,255,0.65)'
+  ctx.fillStyle = colors.hudText.replace(')', ', 0.65)')
   ctx.fillText(sub, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 22)
 }
 
-export const drawGame = (ctx: CanvasRenderingContext2D, state: GameState): void => {
+export const drawGame = (ctx: CanvasRenderingContext2D, state: GameState, colors: ColorPalette): void => {
   // Background
   ctx.fillStyle = '#000'
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
-  // Draw entities
-  state.particles.forEach(p => p.draw(ctx))
-  state.asteroids.forEach(a => a.draw(ctx))
-  state.powerUps.forEach(p => p.draw(ctx))
-  state.bullets.forEach(b => b.draw(ctx))
-  state.ship?.draw(ctx)
+  // Draw entities with colors
+  state.particles.forEach(p => p.draw(ctx, colors))
+  state.asteroids.forEach(a => a.draw(ctx, colors))
+  state.powerUps.forEach(p => p.draw(ctx, colors))
+  state.bullets.forEach(b => b.draw(ctx, colors))
+  state.ship?.draw(ctx, colors)
 
   // HUD
-  drawHUD(ctx, state)
+  drawHUD(ctx, state, colors)
 
   // Game over overlay
   if (state.state === 'gameover') {
-    drawOverlay(ctx, 'GAME OVER', `PUNTAJE: ${state.score}   —   ESPACIO PARA REINICIAR`)
+    drawOverlay(ctx, 'GAME OVER', `PUNTAJE: ${state.score}   —   ESPACIO PARA REINICIAR`, colors)
   }
 }

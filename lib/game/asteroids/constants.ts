@@ -42,3 +42,40 @@ export const MAX_DELTA_TIME = 0.05
 export const ASTEROID_VERTEX_MIN = 8
 export const ASTEROID_VERTEX_MAX = 13
 export const ASTEROID_VERTEX_RADIUS_VARIATION = 0.4
+
+// Color Palettes para el sistema de skins
+export const COLOR_PALETTES = {
+  neon: {
+    ship: '#39ff14',           // Verde neón brillante
+    thruster: '#ff006e',       // Rosa neón
+    asteroid: '#00ffff',       // Cyan neón
+    bullet: '#ffff00',         // Amarillo neón
+    particle: '#ff00ff',       // Magenta neón
+    powerup: '#00ffff',        // Cyan neón
+    hudText: '#39ff14',        // Verde neón
+    hudAccent: '#ff006e',      // Rosa neón
+  },
+  pastel: {
+    ship: '#a8e6cf',           // Verde menta pastel
+    thruster: '#ffd3b6',       // Durazno pastel
+    asteroid: '#ffaaa5',       // Rosa coral pastel
+    bullet: '#ffd700',         // Dorado suave
+    particle: '#dda0dd',       // Ciruela pastel
+    powerup: '#b4d8ff',        // Azul cielo pastel
+    hudText: '#ffffff',        // Blanco
+    hudAccent: '#ffd3b6',      // Durazno pastel
+  },
+  retro: {
+    ship: '#ffffff',           // Blanco clásico
+    thruster: '#ff8200',       // Naranja retro
+    asteroid: '#ffffff',       // Blanco clásico
+    bullet: '#ffffff',         // Blanco clásico
+    particle: '#ffffff',       // Blanco clásico
+    powerup: '#00ffff',        // Cyan retro
+    hudText: '#ffffff',        // Blanco
+    hudAccent: '#00ffff',      // Cyan retro
+  },
+} as const
+
+export type ColorPalette = 'neon' | 'pastel' | 'retro'
+export const DEFAULT_COLOR_PALETTE: ColorPalette = 'retro'

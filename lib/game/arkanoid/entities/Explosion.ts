@@ -10,6 +10,16 @@ const BLOCK_COLORS: Record<BlockColor, string> = {
   purple: '#7f00ff',
 }
 
+// Mapeo de colores de bloques a propiedades de la paleta
+const COLOR_TO_PALETTE_KEY: Record<BlockColor, keyof { brick1: string; brick2: string; brick3: string; brick4: string; brick5: string; brick6: string }> = {
+  red: 'brick1',
+  orange: 'brick2',
+  yellow: 'brick3',
+  green: 'brick4',
+  blue: 'brick5',
+  purple: 'brick6',
+}
+
 export class Explosion {
   x: number
   y: number
@@ -34,12 +44,15 @@ export class Explosion {
     return this.elapsed < EXPLOSION_LIFETIME
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, colors?: { brick1: string; brick2: string; brick3: string; brick4: string; brick5: string; brick6: string }): void {
     if (!this.isAlive()) return
 
     const progress = this.elapsed / EXPLOSION_LIFETIME
     const alpha = 1 - progress
     const scale = 1 + progress * 0.3
+
+    const paletteKey = COLOR_TO_PALETTE_KEY[this.color]
+    const explosionColor = colors ? colors[paletteKey] : BLOCK_COLORS[this.color]
 
     ctx.save()
     ctx.globalAlpha = alpha
@@ -47,7 +60,7 @@ export class Explosion {
     ctx.scale(scale, scale)
     ctx.translate(-(this.x + this.w / 2), -(this.y + this.h / 2))
 
-    ctx.fillStyle = BLOCK_COLORS[this.color]
+    ctx.fillStyle = explosionColor
     ctx.fillRect(this.x, this.y, this.w, this.h)
 
     ctx.restore()

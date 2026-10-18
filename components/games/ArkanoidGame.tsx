@@ -8,7 +8,7 @@ import {
   togglePause,
 } from '@/lib/game/arkanoid/engine/gameEngine'
 import { drawGame } from '@/lib/game/arkanoid/renderer/draw'
-import { CANVAS_WIDTH, CANVAS_HEIGHT } from '@/lib/game/arkanoid/constants'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, COLOR_PALETTES, ColorPalette, DEFAULT_COLOR_PALETTE } from '@/lib/game/arkanoid/constants'
 import { useAuth } from '@/hooks/useAuth'
 import { saveScore } from '@/lib/supabase/scores'
 
@@ -22,6 +22,8 @@ interface ArkanoidGameProps {
   onLivesChange?: (lives: number) => void
   onLevelChange?: (level: number) => void
   onPausedChange?: (paused: boolean) => void
+  colorPalette?: ColorPalette
+  onColorPaletteChange?: (palette: ColorPalette) => void
 }
 
 export const ArkanoidGame = forwardRef<ArkanoidGameHandle, ArkanoidGameProps>(function ArkanoidGameComponent({
@@ -29,7 +31,9 @@ export const ArkanoidGame = forwardRef<ArkanoidGameHandle, ArkanoidGameProps>(fu
   onScoreChange,
   onLivesChange,
   onLevelChange,
-  onPausedChange
+  onPausedChange,
+  colorPalette: initialColorPalette,
+  onColorPaletteChange
 }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameStateRef = useRef<GameState | null>(null)
@@ -46,6 +50,32 @@ export const ArkanoidGame = forwardRef<ArkanoidGameHandle, ArkanoidGameProps>(fu
   const levelChangeCallbackRef = useRef(onLevelChange)
   const pausedChangeCallbackRef = useRef(onPausedChange)
   const onGameEndCallbackRef = useRef(onGameEnd)
+  const [colorPalette, setColorPalette] = useState<ColorPalette>(initialColorPalette || DEFAULT_COLOR_PALETTE)
+  const colorPaletteRef = useRef<ColorPalette>(colorPalette)
+
+  // Load color palette from localStorage
+  useEffect(() => {
+    if (!initialColorPalette) {
+      const saved = localStorage.getItem('arkanoid-color-palette') as ColorPalette | null
+      if (saved && (saved === 'neon' || saved === 'pastel' || saved === 'retro')) {
+        setColorPalette(saved)
+        colorPaletteRef.current = saved
+      }
+    }
+  }, [initialColorPalette])
+
+  // Update color palette when prop changes
+  useEffect(() => {
+    if (initialColorPalette) {
+      setColorPalette(initialColorPalette)
+      colorPaletteRef.current = initialColorPalette
+    }
+  }, [initialColorPalette])
+
+  // Sync colorPaletteRef with state
+  useEffect(() => {
+    colorPaletteRef.current = colorPalette
+  }, [colorPalette])
 
   useEffect(() => {
     scoreChangeCallbackRef.current = onScoreChange
@@ -122,7 +152,8 @@ export const ArkanoidGame = forwardRef<ArkanoidGameHandle, ArkanoidGameProps>(fu
 
       if (gameStateRef.current) {
         updateGame(gameStateRef.current, dt, keysRef.current)
-        drawGame(ctx, gameStateRef.current)
+        const colors = COLOR_PALETTES[colorPaletteRef.current]
+        drawGame(ctx, gameStateRef.current, colors)
 
         // Sync state updates with parent
         if (gameStateRef.current.score !== lastScoreRef.current) {

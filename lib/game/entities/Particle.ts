@@ -30,9 +30,17 @@ export class Particle implements ParticleType {
     if (this.ttl <= 0) this.dead = true
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, colors?: { particle: string }): void {
     const alpha = this.ttl / this.life
-    ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(2)})`
+    const particleColor = colors?.particle || '#ffffff'
+
+    // Convert hex to rgba
+    const hex = particleColor.replace('#', '')
+    const r = parseInt(hex.substring(0, 2), 16)
+    const g = parseInt(hex.substring(2, 4), 16)
+    const b = parseInt(hex.substring(4, 6), 16)
+
+    ctx.strokeStyle = `rgba(${r},${g},${b},${alpha.toFixed(2)})`
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(this.x, this.y)

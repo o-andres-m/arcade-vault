@@ -300,6 +300,32 @@ When adding new games, follow the pattern from SPEC 04 (Asteroids):
 4. Add score tracking via Supabase
 5. Update game registry in `lib/games.ts` (or relevant config)
 
+### Sistema de Skins
+
+Todos los juegos soportan 3 paletas de colores seleccionables:
+
+- **Neon**: Colores brillantes y vibrantes (ácidos, neón)
+- **Pastel**: Colores suaves y claros (pasteles, candy)
+- **Retro**: Colores clásicos arcade (primarios saturados)
+
+**Ubicación del selector**: HUD del GamePlayer, al lado del botón de Pausa.
+
+**Persistencia**: Las preferencias se guardan en `localStorage` con clave
+`[juego]-color-palette`.
+
+**Implementación**:
+
+- Constantes de paletas en `lib/game/[juego]/constants.ts`
+- Props `colorPalette` y `onColorPaletteChange` en cada componente de juego
+- Selector unificado en `GamePlayer.tsx`
+
+**Juegos con sistema de skins implementado**:
+
+- Tetris (tetris)
+- Asteroides (rocas)
+- Arkanoid (arkanoid)
+- Snake (snake)
+
 **Game component structure:**
 
 ```tsx
