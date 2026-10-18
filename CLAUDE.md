@@ -105,6 +105,44 @@ memoria en `references/game-suggestions.md`.
 
 **Location:** `.agents/skills/game-planner/`
 
+#### `/skin-designer` - Game Skin System Implementation
+
+Implementa un sistema de selección de 3 paletas de colores (skins) para todos
+los juegos de Arcade Vault. Agrega selector visual al lado del botón de Pausa
+en el HUD. **Implementa código directamente, no genera specs.**
+
+**Usage:**
+
+```bash
+# Implementar para todos los juegos pendientes
+/skin-designer
+
+# Implementar solo para un juego específico
+/skin-designer [game-id]
+```
+
+**Examples:**
+
+```bash
+# Todos los juegos
+/skin-designer all
+
+# Solo Asteroides
+/skin-designer rocas
+
+# Solo Snake
+/skin-designer snake
+```
+
+**Features:**
+
+- 3 paletas por juego: Neon, Pastel, Retro
+- Selector en el HUD (al lado de botón Pausa)
+- Persistencia en localStorage
+- Sigue el patrón ya implementado en Tetris
+
+**Location:** `.agents/skills/skin-designer/`
+
 ## Supabase Integration
 
 ### Configuration
