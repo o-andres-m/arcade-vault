@@ -98,6 +98,13 @@ not implement code.**
 
 **Location:** `.agents/skills/add-game/`
 
+#### `/game-planner` - Game Strategy Advisor
+
+Analiza, planifica y sugiere juegos que encajan con Arcade Vault. Mantiene
+memoria en `references/game-suggestions.md`.
+
+**Location:** `.agents/skills/game-planner/`
+
 ## Supabase Integration
 
 ### Configuration
