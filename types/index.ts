@@ -39,9 +39,10 @@ export interface Profile {
 // Tipo de score (tabla scores) - Extiende el tipo antiguo para compatibilidad
 export interface Score {
   id: string;
-  user_id: string;
+  user_id: string | null;
   game_id: string;
   score: number;
+  display_name?: string;
   created_at: string;
   // Campos heredados para compatibilidad
   game?: string;

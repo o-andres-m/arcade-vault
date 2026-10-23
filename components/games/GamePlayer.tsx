@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Game, Score } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { saveScore } from "@/lib/supabase/scores";
 import { AsteroidsGame } from "./AsteroidsGame";
 import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
@@ -21,12 +22,13 @@ interface GamePlayerProps {
 export function GamePlayer({ game }: GamePlayerProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { profile } = useProfile(user?.id || null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(0);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState("");
+  const [playerName, setPlayerName] = useState("");
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [tetrisResetKey, setTetrisResetKey] = useState(0);
@@ -58,6 +60,21 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setShowMobileControls(isTouch && prefs.showControls);
     setControlMode(prefs.mode);
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      const savedName = localStorage.getItem('av_guest_name');
+      if (savedName) {
+        setPlayerName(savedName);
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user && profile) {
+      setPlayerName(profile.username || user.email?.split('@')[0] || 'USER');
+    }
+  }, [user, profile]);
 
   // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris)
   useEffect(() => {
@@ -156,29 +173,16 @@ export function GamePlayer({ game }: GamePlayerProps) {
 
   const handleSaveScore = async () => {
     setIsSaving(true);
-    const playerName = name.trim().toUpperCase().slice(0, 10) || "PLAYER1";
+    const cleanName = playerName.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const finalName = cleanName.slice(0, 10) || 'PLAYER1';
 
     try {
-      // Si es juego Asteroides/Arkanoid/Snake/Tetris y está logueado, guardar en Supabase
-      if ((isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame) && user) {
-        await saveScore(game.id, score);
-      } else {
-        // Guardar en localStorage
-        const newScore: Score = {
-          id: `local-${Date.now()}`,
-          user_id: 'local',
-          game_id: game.id,
-          score: score,
-          created_at: new Date().toISOString(),
-          game: game.id,
-          name: playerName,
-          at: Date.now(),
-        };
+      if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame) {
+        await saveScore(game.id, score, finalName);
 
-        const existingScores = localStorage.getItem("av_scores");
-        const scores: Score[] = existingScores ? JSON.parse(existingScores) : [];
-        scores.push(newScore);
-        localStorage.setItem("av_scores", JSON.stringify(scores));
+        if (!user) {
+          localStorage.setItem('av_guest_name', finalName);
+        }
       }
 
       setSaved(true);
@@ -197,7 +201,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setLevel(1);
     setPaused(false);
     setOver(false);
-    setName("");
+    setPlayerName("");
     setSaved(false);
     if (isTetrisGame) {
       setTetrisResetKey(prev => prev + 1);
@@ -494,20 +498,28 @@ export function GamePlayer({ game }: GamePlayerProps) {
             {!saved ? (
               <>
                 <div className={styles.inputRow}>
-                  {!isAsteroidsGame && !isArkanoidGame && !isSnakeGame && !isTetrisGame && (
-                    <input
-                      type="text"
-                      placeholder="TU NOMBRE"
-                      value={name}
-                      onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
-                      maxLength={10}
-                      className={styles.nameInput}
-                    />
-                  )}
+                  <input
+                    type="text"
+                    placeholder="TU NOMBRE"
+                    value={playerName}
+                    onChange={(e) => {
+                      if (!user) {
+                        setPlayerName(e.target.value.toUpperCase().slice(0, 10));
+                      }
+                    }}
+                    maxLength={10}
+                    readOnly={!!user}
+                    className={styles.nameInput}
+                  />
                   <button className="btn" onClick={handleSaveScore} disabled={isSaving}>
                     {isSaving ? 'GUARDANDO...' : 'GUARDAR'}
                   </button>
                 </div>
+                {user && (
+                  <div className={styles.nameHint}>
+                    Usuario logueado (nombre no editable)
+                  </div>
+                )}
               </>
             ) : (
               <div className={styles.toastSaved}>PUNTUACIÓN GUARDADA_</div>
