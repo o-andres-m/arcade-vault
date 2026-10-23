@@ -1,4 +1,4 @@
-import { Ship as ShipType } from '../asteroids/types'
+import { Ship as ShipType, InputState } from '../asteroids/types'
 import { wrap, random } from '../physics/utils'
 import {
   CANVAS_WIDTH,
@@ -43,19 +43,37 @@ export class Ship implements ShipType {
     this.dead = false
   }
 
-  update(dt: number, keys: Record<string, boolean>): void {
+  update(dt: number, keys: Record<string, boolean>, inputState?: InputState): void {
     if (this.dead) return
     if (this.invincible > 0) this.invincible -= dt
     if (this.shootCooldown > 0) this.shootCooldown -= dt
     if (this.tripleShot > 0) this.tripleShot -= dt
 
-    if (keys['ArrowLeft']) this.angle -= SHIP_ROTATION_SPEED * dt
-    if (keys['ArrowRight']) this.angle += SHIP_ROTATION_SPEED * dt
+    // Joystick arcade mode (solo para móviles con joystick activo)
+    if (inputState?.joystick?.angle !== null && inputState?.joystick?.angle !== undefined && inputState?.joystick?.distance > 0.2) {
+      // Convertir ángulo del joystick (0-360 grados) a radianes
+      // El joystick usa: 0° = derecha, 90° = abajo, 180° = izquierda, 270° = arriba
+      // La nave usa radianes donde -PI/2 = arriba
+      const joystickAngleRad = (inputState.joystick.angle * Math.PI / 180)
 
-    this.thrusting = !!keys['ArrowUp']
-    if (this.thrusting) {
-      this.vx += Math.cos(this.angle) * SHIP_ACCELERATION * dt
-      this.vy += Math.sin(this.angle) * SHIP_ACCELERATION * dt
+      // Apuntar directamente al ángulo del joystick
+      this.angle = joystickAngleRad
+
+      // Acelerar en la dirección del joystick (proporcional a la distancia)
+      this.thrusting = true
+      const thrustMultiplier = Math.min(inputState.joystick.distance, 1)
+      this.vx += Math.cos(this.angle) * SHIP_ACCELERATION * dt * thrustMultiplier
+      this.vy += Math.sin(this.angle) * SHIP_ACCELERATION * dt * thrustMultiplier
+    } else {
+      // Modo teclado tradicional
+      if (keys['ArrowLeft']) this.angle -= SHIP_ROTATION_SPEED * dt
+      if (keys['ArrowRight']) this.angle += SHIP_ROTATION_SPEED * dt
+
+      this.thrusting = !!keys['ArrowUp']
+      if (this.thrusting) {
+        this.vx += Math.cos(this.angle) * SHIP_ACCELERATION * dt
+        this.vy += Math.sin(this.angle) * SHIP_ACCELERATION * dt
+      }
     }
 
     this.vx *= SHIP_FRICTION

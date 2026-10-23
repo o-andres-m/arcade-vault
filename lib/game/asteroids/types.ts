@@ -60,7 +60,7 @@ export interface Ship extends Vector2 {
   tripleShot: number
   dead: boolean
   reset(): void
-  update(dt: number, keys: Record<string, boolean>): void
+  update(dt: number, keys: Record<string, boolean>, inputState?: InputState): void
   tryShoot(spreadAngle: number): Bullet[]
   draw(ctx: CanvasRenderingContext2D, colors?: any): void
 }
@@ -87,6 +87,11 @@ export interface InputState {
   right: boolean
   up: boolean
   shoot: boolean
+  // Joystick arcade (opcional)
+  joystick?: {
+    angle: number | null
+    distance: number
+  }
 }
 
 export interface ScoreSaveData {

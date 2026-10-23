@@ -13,9 +13,20 @@ interface AsteroidsGameProps {
   onLevelChange?: (level: number) => void
   colorPalette?: ColorPalette
   onColorPaletteChange?: (palette: ColorPalette) => void
+  joystickAngle?: number | null
+  joystickDistance?: number
 }
 
-export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLevelChange, colorPalette: initialColorPalette, onColorPaletteChange }: AsteroidsGameProps) => {
+export const AsteroidsGame = ({
+  onGameOver,
+  onScoreChange,
+  onLivesChange,
+  onLevelChange,
+  colorPalette: initialColorPalette,
+  onColorPaletteChange,
+  joystickAngle,
+  joystickDistance
+}: AsteroidsGameProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameStateRef = useRef<GameState>(initializeGame())
   const keysRef = useRef<Record<string, boolean>>({})
@@ -32,6 +43,8 @@ export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLeve
   const lastLevelRef = useRef(1)
   const [colorPalette, setColorPalette] = useState<ColorPalette>(initialColorPalette || DEFAULT_COLOR_PALETTE)
   const colorPaletteRef = useRef<ColorPalette>(colorPalette)
+  const joystickAngleRef = useRef<number | null>(null)
+  const joystickDistanceRef = useRef<number>(0)
 
   // Load color palette from localStorage
   useEffect(() => {
@@ -56,6 +69,12 @@ export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLeve
   useEffect(() => {
     colorPaletteRef.current = colorPalette
   }, [colorPalette])
+
+  // Sync joystick refs with props
+  useEffect(() => {
+    joystickAngleRef.current = joystickAngle ?? null
+    joystickDistanceRef.current = joystickDistance ?? 0
+  }, [joystickAngle, joystickDistance])
 
   useEffect(() => {
     gameOverCallbackRef.current = onGameOver
@@ -118,6 +137,10 @@ export const AsteroidsGame = ({ onGameOver, onScoreChange, onLivesChange, onLeve
         right: false,
         up: false,
         shoot: false,
+        joystick: {
+          angle: joystickAngleRef.current,
+          distance: joystickDistanceRef.current
+        }
       }
       updateGameState(gameStateRef.current, dt, inputState, keysRef.current, justPressedRef.current)
 
