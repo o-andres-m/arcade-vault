@@ -143,6 +143,93 @@ en el HUD. **Implementa código directamente, no genera specs.**
 
 **Location:** `.agents/skills/skin-designer/`
 
+#### `/mobile-porter` - Mobile Touch Adaptation
+
+Adapta juegos de Arcade Vault para funcionalidad móvil táctil. Analiza controles
+de teclado, diseña mapeo móvil apropiado, e implementa soporte touch con
+componentes existentes. **Implementa código directamente, no genera specs.**
+
+**Usage:**
+
+```bash
+# Adaptar un juego específico
+/mobile-porter [game-id]
+
+# Listar juegos sin soporte móvil
+/mobile-porter
+/mobile-porter all
+```
+
+**Examples:**
+
+```bash
+# Adaptar Snake
+/mobile-porter snake
+
+# Listar juegos pendientes
+/mobile-porter all
+```
+
+**Features:**
+
+- Analiza controles de teclado del juego
+- Diseña mapeo móvil apropiado (DPad, Joystick, botones)
+- Agrega entrada en `lib/game/controls/controlMappings.ts`
+- Soporta casos especiales (control analógico)
+- Mantiene compatibilidad con desktop (aditivo, no reemplazo)
+
+**Workflow:**
+
+1. Analiza controles actuales del juego
+2. Diseña tipo de control móvil (DPad/Joystick/ArcadeJoystick)
+3. Implementa mapeo en `controlMappings.ts`
+4. Proporciona instrucciones de prueba
+
+**Location:** `.agents/skills/mobile-porter/`
+
+#### `/game-jam` - Game Concept Generator
+
+Genera 3 conceptos de juegos arcade basados en un tema específico. Crea specs
+completas listas para implementar con `/spec-impl`, mezclando adaptaciones de
+clásicos con ideas originales. **Solo genera specs, no implementa código.**
+
+**Usage:**
+
+```bash
+/game-jam [tema]
+```
+
+**Examples:**
+
+```bash
+# Tema espacial
+/game-jam space
+
+# Tema submarino
+/game-jam underwater
+
+# Preguntar por tema
+/game-jam
+```
+
+**Features:**
+
+- Genera 3 conceptos únicos por tema
+- Balance de categorías (ARCADE, PUZZLE, SHOOTER, VERSUS)
+- Specs completas siguiendo formato SPEC 06/07
+- Entidades concretas y constantes reales
+- Output: `specs/game-jam/[tema]/[game-id]/spec.md`
+
+**Workflow:**
+
+1. Analiza e interpreta el tema
+2. Genera 5-7 candidatos (clásicos adaptados + originales)
+3. Puntúa y selecciona top 3
+4. Crea estructura de directorios
+5. Genera specs completas para cada juego
+
+**Location:** `.agents/skills/game-jam/`
+
 ## Supabase Integration
 
 ### Configuration
