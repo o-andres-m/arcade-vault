@@ -10,6 +10,8 @@ import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import SnakeGame, { SnakeGameHandle } from "./SnakeGame";
 import TetrisGame from "./TetrisGame";
 import type { ColorPalette } from "@/lib/game/tetris/types";
+import { isTouchDevice, loadControlPreferences } from "@/lib/utils/deviceDetection";
+import { MobileControls, MobileControlsState } from "./controls/MobileControls";
 import styles from "./GamePlayer.module.css";
 
 interface GamePlayerProps {
@@ -32,6 +34,10 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [asteroidsColorPalette, setAsteroidsColorPalette] = useState<ColorPalette>("retro");
   const [arkanoidColorPalette, setArkanoidColorPalette] = useState<ColorPalette>("retro");
   const [snakeColorPalette, setSnakeColorPalette] = useState<ColorPalette>("retro");
+  const [showMobileControls, setShowMobileControls] = useState(false);
+  const [controlMode, setControlMode] = useState<'dpad' | 'joystick'>('dpad');
+  const [joystickAngle, setJoystickAngle] = useState<number | null>(null);
+  const [joystickDistance, setJoystickDistance] = useState<number>(0);
   const arkanoidRef = useRef<ArkanoidGameHandle>(null);
   const snakeRef = useRef<SnakeGameHandle>(null);
 
@@ -45,6 +51,13 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const initialLives = isSnakeGame ? 5 : 3;
     setLives(initialLives);
   }, [isSnakeGame]);
+
+  useEffect(() => {
+    const isTouch = isTouchDevice();
+    const prefs = loadControlPreferences();
+    setShowMobileControls(isTouch && prefs.showControls);
+    setControlMode(prefs.mode);
+  }, []);
 
   // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris)
   useEffect(() => {
@@ -195,6 +208,93 @@ export function GamePlayer({ game }: GamePlayerProps) {
     router.push("/biblioteca");
   };
 
+  const handleMobileInput = (input: MobileControlsState) => {
+    // Para Asteroides con joystick arcade, guardar ángulo y distancia
+    if (isAsteroidsGame && input.joystick.active) {
+      setJoystickAngle(input.joystick.angle);
+      setJoystickDistance(input.joystick.distance);
+
+      // Simular botones
+      if (input.buttons.a) {
+        simulateKeyEvent('Space', 'keydown');
+      } else {
+        simulateKeyEvent('Space', 'keyup');
+      }
+
+      if (input.buttons.b) {
+        simulateKeyEvent('KeyH', 'keydown');
+      } else {
+        simulateKeyEvent('KeyH', 'keyup');
+      }
+      return;
+    }
+
+    // Reset joystick state cuando no está activo
+    if (isAsteroidsGame && !input.joystick.active) {
+      setJoystickAngle(null);
+      setJoystickDistance(0);
+    }
+
+    // Simulate keyboard events based on mobile input for other games
+    if (input.direction.up && !input.direction.down) {
+      simulateKeyEvent('ArrowUp', 'keydown');
+    } else {
+      simulateKeyEvent('ArrowUp', 'keyup');
+    }
+
+    if (input.direction.down) {
+      simulateKeyEvent('ArrowDown', 'keydown');
+    } else {
+      simulateKeyEvent('ArrowDown', 'keyup');
+    }
+
+    if (input.direction.left) {
+      simulateKeyEvent('ArrowLeft', 'keydown');
+    } else {
+      simulateKeyEvent('ArrowLeft', 'keyup');
+    }
+
+    if (input.direction.right) {
+      simulateKeyEvent('ArrowRight', 'keydown');
+    } else {
+      simulateKeyEvent('ArrowRight', 'keyup');
+    }
+
+    if (input.buttons.a) {
+      simulateKeyEvent('Space', 'keydown');
+    } else {
+      simulateKeyEvent('Space', 'keyup');
+    }
+
+    if (input.buttons.b) {
+      simulateKeyEvent('KeyH', 'keydown');
+    } else {
+      simulateKeyEvent('KeyH', 'keyup');
+    }
+
+    if (input.buttons.x) {
+      simulateKeyEvent('KeyX', 'keydown');
+    } else {
+      simulateKeyEvent('KeyX', 'keyup');
+    }
+
+    if (input.buttons.y) {
+      simulateKeyEvent('KeyZ', 'keydown');
+    } else {
+      simulateKeyEvent('KeyZ', 'keyup');
+    }
+  };
+
+  const simulateKeyEvent = (code: string, type: 'keydown' | 'keyup') => {
+    const event = new KeyboardEvent(type, {
+      key: code,
+      code: code,
+      bubbles: true,
+      cancelable: true
+    });
+    window.document.dispatchEvent(event);
+  };
+
   return (
     <div className={styles.player}>
       {/* HUD */}
@@ -306,6 +406,8 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 onLevelChange={handleAsteroidsLevelChange}
                 colorPalette={asteroidsColorPalette}
                 onColorPaletteChange={setAsteroidsColorPalette}
+                joystickAngle={joystickAngle}
+                joystickDistance={joystickDistance}
               />
             ) : isArkanoidGame ? (
               <ArkanoidGame
@@ -369,6 +471,16 @@ export function GamePlayer({ game }: GamePlayerProps) {
           <span>█████████░ 90%</span>
         </div>
       </div>
+
+      {/* Mobile Controls (fuera del CRT) */}
+      {showMobileControls && (
+        <MobileControls
+          gameId={game.id}
+          onInput={handleMobileInput}
+          isPaused={paused}
+          controlMode={controlMode}
+        />
+      )}
 
       {/* Modal Game Over */}
       {over && (

@@ -156,7 +156,7 @@ export const updateGameState = (
     }
 
     // Update entities
-    state.ship.update(dt, keys)
+    state.ship.update(dt, keys, inputState)
   }
 
   state.bullets.forEach(b => b.update(dt))
