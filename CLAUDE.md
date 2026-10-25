@@ -187,6 +187,54 @@ componentes existentes. **Implementa código directamente, no genera specs.**
 
 **Location:** `.agents/skills/mobile-porter/`
 
+#### `/spec-impl-game` - Post-Implementation Game Enhancer
+
+Post-implementation enhancer para juegos. Después de ejecutar `/spec-impl`,
+este skill agrega automáticamente skins (3 paletas de colores) y controles
+móviles táctiles. **Automatiza los pasos posteriores a la implementación base.**
+
+**Usage:**
+
+```bash
+# Paso 1: Implementar juego base primero
+/spec-impl [spec-ref]
+
+# Paso 2: Agregar skins y controles móviles
+/spec-impl-game [spec-ref]
+```
+
+**Examples:**
+
+```bash
+# Después de implementar Snake
+/spec-impl 07-add-snake
+/spec-impl-game 07-add-snake
+
+# Después de implementar por número
+/spec-impl 08
+/spec-impl-game 08
+```
+
+**Workflow:**
+
+1. Verifica que `/spec-impl` ya corrió (archivos base existen)
+2. Extrae game-id del spec automáticamente
+3. Ejecuta `/skin-designer [game-id]` → Agrega 3 paletas de colores
+4. Ejecuta `/mobile-porter [game-id]` → Adapta controles móviles
+5. Reporta resumen unificado con instrucciones de prueba
+
+**Features agregadas:**
+
+- 🎨 Sistema de skins: neon, pastel, retro
+- 📱 Controles táctiles: DPad/Joystick según tipo de juego
+- 💾 Persistencia: localStorage para preferencias
+- 📊 Reporting: Resumen completo con checklist de validación
+
+**Location:** `.agents/skills/spec-impl-game/`
+
+**Nota:** Este skill es un enhancer post-implementación. NO reemplaza a `/spec-impl`,
+sino que lo complementa automatizando los pasos posteriores estándar de todos los juegos.
+
 #### `/game-jam` - Game Concept Generator
 
 Genera 3 conceptos de juegos arcade basados en un tema específico. Crea specs
