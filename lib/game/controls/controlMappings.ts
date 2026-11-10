@@ -58,6 +58,17 @@ export const GAME_CONTROLS: Record<string, GameControlMapping> = {
       right: 'Mover der'
     },
     buttons: {}
+  },
+
+  frogger: {
+    gameId: 'frogger',
+    directional: {
+      up: 'Saltar arriba',
+      down: 'Saltar abajo',
+      left: 'Saltar izq',
+      right: 'Saltar der'
+    },
+    buttons: {}
   }
 }
 
