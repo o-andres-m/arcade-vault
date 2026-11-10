@@ -69,6 +69,11 @@ When implementing features:
 
 ### Custom Skills
 
+Arcade Vault usa slash commands para workflows de desarrollo que el usuario
+invoca manualmente.
+
+**Location:** `.claude/skills/`
+
 #### `/add-game` - Game Spec Generator
 
 Custom skill for adding new games to Arcade Vault. **Only generates specs, does
@@ -96,102 +101,14 @@ not implement code.**
 2. Review and approve the spec
 3. `/spec-impl` implements the spec step-by-step
 
-**Location:** `.agents/skills/add-game/`
-
-#### `/game-planner` - Game Strategy Advisor
-
-Analiza, planifica y sugiere juegos que encajan con Arcade Vault. Mantiene
-memoria en `references/game-suggestions.md`.
-
-**Location:** `.agents/skills/game-planner/`
-
-#### `/skin-designer` - Game Skin System Implementation
-
-Implementa un sistema de selección de 3 paletas de colores (skins) para todos
-los juegos de Arcade Vault. Agrega selector visual al lado del botón de Pausa
-en el HUD. **Implementa código directamente, no genera specs.**
-
-**Usage:**
-
-```bash
-# Implementar para todos los juegos pendientes
-/skin-designer
-
-# Implementar solo para un juego específico
-/skin-designer [game-id]
-```
-
-**Examples:**
-
-```bash
-# Todos los juegos
-/skin-designer all
-
-# Solo Asteroides
-/skin-designer rocas
-
-# Solo Snake
-/skin-designer snake
-```
-
-**Features:**
-
-- 3 paletas por juego: Neon, Pastel, Retro
-- Selector en el HUD (al lado de botón Pausa)
-- Persistencia en localStorage
-- Sigue el patrón ya implementado en Tetris
-
-**Location:** `.agents/skills/skin-designer/`
-
-#### `/mobile-porter` - Mobile Touch Adaptation
-
-Adapta juegos de Arcade Vault para funcionalidad móvil táctil. Analiza controles
-de teclado, diseña mapeo móvil apropiado, e implementa soporte touch con
-componentes existentes. **Implementa código directamente, no genera specs.**
-
-**Usage:**
-
-```bash
-# Adaptar un juego específico
-/mobile-porter [game-id]
-
-# Listar juegos sin soporte móvil
-/mobile-porter
-/mobile-porter all
-```
-
-**Examples:**
-
-```bash
-# Adaptar Snake
-/mobile-porter snake
-
-# Listar juegos pendientes
-/mobile-porter all
-```
-
-**Features:**
-
-- Analiza controles de teclado del juego
-- Diseña mapeo móvil apropiado (DPad, Joystick, botones)
-- Agrega entrada en `lib/game/controls/controlMappings.ts`
-- Soporta casos especiales (control analógico)
-- Mantiene compatibilidad con desktop (aditivo, no reemplazo)
-
-**Workflow:**
-
-1. Analiza controles actuales del juego
-2. Diseña tipo de control móvil (DPad/Joystick/ArcadeJoystick)
-3. Implementa mapeo en `controlMappings.ts`
-4. Proporciona instrucciones de prueba
-
-**Location:** `.agents/skills/mobile-porter/`
+**Location:** `.claude/skills/add-game/`
 
 #### `/spec-impl-game` - Post-Implementation Game Enhancer
 
 Post-implementation enhancer para juegos. Después de ejecutar `/spec-impl`,
-este skill agrega automáticamente skins (3 paletas de colores) y controles
-móviles táctiles. **Automatiza los pasos posteriores a la implementación base.**
+este skill invoca automáticamente los agentes `skin-designer` y `mobile-porter`
+para agregar skins y controles táctiles. **Automatiza los pasos posteriores a la
+implementación base.**
 
 **Usage:**
 
@@ -219,8 +136,8 @@ móviles táctiles. **Automatiza los pasos posteriores a la implementación base
 
 1. Verifica que `/spec-impl` ya corrió (archivos base existen)
 2. Extrae game-id del spec automáticamente
-3. Ejecuta `/skin-designer [game-id]` → Agrega 3 paletas de colores
-4. Ejecuta `/mobile-porter [game-id]` → Adapta controles móviles
+3. Invoca agente `skin-designer` → Agrega 3 paletas de colores
+4. Invoca agente `mobile-porter` → Adapta controles móviles
 5. Reporta resumen unificado con instrucciones de prueba
 6. **NO hace commits ni pushes** - Solo implementa y reporta cambios
 
@@ -231,35 +148,40 @@ móviles táctiles. **Automatiza los pasos posteriores a la implementación base
 - 💾 Persistencia: localStorage para preferencias
 - 📊 Reporting: Resumen completo con checklist de validación
 
-**Location:** `.agents/skills/spec-impl-game/`
+**Location:** `.claude/skills/spec-impl-game/`
 
 **Nota:** Este skill es un enhancer post-implementación. NO reemplaza a `/spec-impl`,
 sino que lo complementa automatizando los pasos posteriores estándar de todos los juegos.
 Los archivos quedan modificados sin commit - el usuario decide cuándo commitear.
 
-#### `/game-jam` - Game Concept Generator
+### Custom Agents
+
+Arcade Vault tiene 4 agentes personalizados que Claude invoca automáticamente
+según el contexto. **No son slash commands** - Claude los detecta y ejecuta cuando
+son necesarios.
+
+**Location:** `.claude/agents/`
+
+**¿Cuándo usar?** No los invocas directamente. Simplemente pídele a Claude lo que
+necesitas en lenguaje natural y él decidirá si debe invocar un agente.
+
+#### `game-jam` - Game Concept Generator
 
 Genera 3 conceptos de juegos arcade basados en un tema específico. Crea specs
 completas listas para implementar con `/spec-impl`, mezclando adaptaciones de
 clásicos con ideas originales. **Solo genera specs, no implementa código.**
 
-**Usage:**
+**Claude invoca este agente cuando:**
+- Pides "genera conceptos de juegos"
+- Mencionas un tema y quieres juegos relacionados
+- Preguntas "qué juegos puedo hacer con tema X"
 
-```bash
-/game-jam [tema]
+**Ejemplos de prompts:**
+
 ```
-
-**Examples:**
-
-```bash
-# Tema espacial
-/game-jam space
-
-# Tema submarino
-/game-jam underwater
-
-# Preguntar por tema
-/game-jam
+"Genera 3 conceptos de juegos con tema espacial"
+"Quiero ideas de juegos arcade para tema underwater"
+"Necesito juegos inspirados en medieval"
 ```
 
 **Features:**
@@ -278,7 +200,89 @@ clásicos con ideas originales. **Solo genera specs, no implementa código.**
 4. Crea estructura de directorios
 5. Genera specs completas para cada juego
 
-**Location:** `.agents/skills/game-jam/`
+**Location:** `.claude/agents/game-jam.md`
+
+#### `game-planner` - Game Strategy Advisor
+
+Analiza el catálogo actual de Arcade Vault y sugiere juegos estratégicamente
+usando 4 criterios objetivos. Mantiene memoria en `references/game-suggestions.md`.
+
+**Claude invoca este agente cuando:**
+- Preguntas "qué juegos debería agregar"
+- Pides sugerencias sin tema específico
+- Quieres análisis estratégico del catálogo
+
+**Ejemplos de prompts:**
+
+```
+"¿Qué juegos me recomiendas agregar?"
+"Necesito sugerencias para balancear el catálogo"
+"¿Qué categoría está subrepresentada?"
+```
+
+**Features:**
+
+- Scoring objetivo (Balance, Complejidad, Popularidad, Referencias)
+- Actualiza `references/game-suggestions.md` con estados (🎯 🔍 ✅ ❌)
+- Considera gaps en categorías actuales
+- Sugiere 3-5 juegos por invocación
+
+**Location:** `.claude/agents/game-planner.md`
+
+#### `skin-designer` - Game Skin System Implementation
+
+Implementa sistema de 3 paletas de colores (neon, pastel, retro) para juegos.
+Agrega selector visual al HUD y persistencia en localStorage. **Implementa código
+directamente, no genera specs.**
+
+**Claude invoca este agente cuando:**
+- Juego nuevo NO tiene paletas de colores
+- Pides "agregar skins/temas de color"
+- `/spec-impl-game` lo invoca automáticamente
+
+**Ejemplos de prompts:**
+
+```
+"Agrega sistema de skins a snake"
+"Necesito paletas de colores para el juego nuevo"
+```
+
+**Features:**
+
+- 3 paletas por juego: Neon, Pastel, Retro
+- Selector en HUD (al lado de botón Pausa)
+- Persistencia en localStorage
+- Sigue patrón de referencia (Tetris)
+
+**Location:** `.claude/agents/skin-designer.md`
+
+#### `mobile-porter` - Mobile Touch Adaptation
+
+Adapta juegos para funcionalidad móvil táctil. Analiza controles de teclado y
+diseña mapeo apropiado (DPad/Joystick/ArcadeJoystick). **Implementa código
+directamente, no genera specs.**
+
+**Claude invoca este agente cuando:**
+- Juego nuevo NO tiene entrada en `controlMappings.ts`
+- Pides "agregar controles móviles/táctiles"
+- `/spec-impl-game` lo invoca automáticamente
+
+**Ejemplos de prompts:**
+
+```
+"Adapta snake para móvil"
+"Necesito controles táctiles para el juego nuevo"
+```
+
+**Features:**
+
+- Analiza controles de teclado del juego
+- Diseña mapeo móvil apropiado (DPad, Joystick, botones)
+- Agrega entrada en `lib/game/controls/controlMappings.ts`
+- Soporta casos especiales (control analógico)
+- Mantiene compatibilidad con desktop (aditivo, no reemplazo)
+
+**Location:** `.claude/agents/mobile-porter.md`
 
 ## Supabase Integration
 
@@ -507,4 +511,5 @@ export default function MyGame({ onGameOver, isPaused, onScoreChange }: GameProp
 - **Supabase Setup**: See `SUPABASE_SETUP.md` for detailed configuration
 - **Next.js Docs**: `node_modules/next/dist/docs/`
 - **Specs**: All features documented in `/specs`
-- **Skills**: Custom skills in `.agents/skills/`
+- **Skills**: Custom slash commands in `.claude/skills/`
+- **Agents**: Custom agents in `.claude/agents/`
