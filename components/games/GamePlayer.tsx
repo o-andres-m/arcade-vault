@@ -10,6 +10,9 @@ import { AsteroidsGame } from "./AsteroidsGame";
 import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import SnakeGame, { SnakeGameHandle } from "./SnakeGame";
 import TetrisGame from "./TetrisGame";
+import dynamic from "next/dynamic";
+
+const FroggerGame = dynamic(() => import("./FroggerGame"), { ssr: false });
 import type { ColorPalette } from "@/lib/game/tetris/types";
 import { isTouchDevice, loadControlPreferences } from "@/lib/utils/deviceDetection";
 import { MobileControls, MobileControlsState } from "./controls/MobileControls";
@@ -32,10 +35,12 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [tetrisResetKey, setTetrisResetKey] = useState(0);
+  const [froggerResetKey, setFroggerResetKey] = useState(0);
   const [tetrisColorPalette, setTetrisColorPalette] = useState<ColorPalette>("retro");
   const [asteroidsColorPalette, setAsteroidsColorPalette] = useState<ColorPalette>("retro");
   const [arkanoidColorPalette, setArkanoidColorPalette] = useState<ColorPalette>("retro");
   const [snakeColorPalette, setSnakeColorPalette] = useState<ColorPalette>("retro");
+  const [froggerColorPalette, setFroggerColorPalette] = useState<ColorPalette>("retro");
   const [showMobileControls, setShowMobileControls] = useState(false);
   const [controlMode, setControlMode] = useState<'dpad' | 'joystick'>('dpad');
   const [joystickAngle, setJoystickAngle] = useState<number | null>(null);
@@ -48,6 +53,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const isArkanoidGame = game.id === 'arkanoid';
   const isSnakeGame = game.id === 'snake';
   const isTetrisGame = game.id === 'tetris';
+  const isFroggerGame = game.id === 'frogger';
 
   useEffect(() => {
     const initialLives = isSnakeGame ? 5 : 3;
@@ -76,16 +82,16 @@ export function GamePlayer({ game }: GamePlayerProps) {
     }
   }, [user, profile]);
 
-  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris)
+  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris/Frogger)
   useEffect(() => {
-    if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || paused || over) return;
+    if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame || paused || over) return;
 
     const interval = setInterval(() => {
       setScore((prev) => prev + Math.floor(Math.random() * 50 + 10));
     }, 220);
 
     return () => clearInterval(interval);
-  }, [isAsteroidsGame, isArkanoidGame, isSnakeGame, isTetrisGame, paused, over]);
+  }, [isAsteroidsGame, isArkanoidGame, isSnakeGame, isTetrisGame, isFroggerGame, paused, over]);
 
   // Subir nivel cada 2500 puntos
   useEffect(() => {
@@ -163,6 +169,23 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setScore(newScore);
   };
 
+  const handleFroggerGameOver = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
+  };
+
+  const handleFroggerScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
+  const handleFroggerLivesChange = (newLives: number) => {
+    setLives(newLives);
+  };
+
+  const handleFroggerLevelChange = (newLevel: number) => {
+    setLevel(newLevel);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -177,7 +200,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const finalName = cleanName.slice(0, 10) || 'PLAYER1';
 
     try {
-      if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame) {
+      if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame) {
         await saveScore(game.id, score, finalName);
 
         if (!user) {
@@ -205,6 +228,9 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setSaved(false);
     if (isTetrisGame) {
       setTetrisResetKey(prev => prev + 1);
+    }
+    if (isFroggerGame) {
+      setFroggerResetKey(prev => prev + 1);
     }
   };
 
@@ -305,17 +331,29 @@ export function GamePlayer({ game }: GamePlayerProps) {
       <div className={styles.hud}>
         <div className={styles.hudStat}>
           <div className={styles.label}>JUGADOR</div>
-          <div className={styles.value}>PLAYER1</div>
+          <div className={styles.value}>{playerName || 'PLAYER1'}</div>
         </div>
         <div className={styles.hudStat}>
           <div className={styles.label}>PUNTUACIÓN</div>
           <div className={`${styles.value} ${styles.cyan}`}>{score.toLocaleString()}</div>
         </div>
-        {!isTetrisGame && (
+        {!isTetrisGame && !isFroggerGame && (
           <>
             <div className={styles.hudStat}>
               <div className={styles.label}>VIDAS</div>
               <div className={`${styles.value} ${styles.magenta}`}>{"❤".repeat(lives)}</div>
+            </div>
+            <div className={styles.hudStat}>
+              <div className={styles.label}>NIVEL</div>
+              <div className={`${styles.value} ${styles.yellow}`}>{level}</div>
+            </div>
+          </>
+        )}
+        {isFroggerGame && (
+          <>
+            <div className={styles.hudStat}>
+              <div className={styles.label}>VIDAS</div>
+              <div className={`${styles.value} ${styles.magenta}`}>{"❤".repeat(Math.max(0, lives))}</div>
             </div>
             <div className={styles.hudStat}>
               <div className={styles.label}>NIVEL</div>
@@ -373,6 +411,18 @@ export function GamePlayer({ game }: GamePlayerProps) {
               <option value="retro">✨ Retro</option>
             </select>
           )}
+          {isFroggerGame && (
+            <select
+              value={froggerColorPalette}
+              onChange={(e) => setFroggerColorPalette(e.target.value as ColorPalette)}
+              className={`btn ${styles.colorSelect}`}
+              title="Select color palette"
+            >
+              <option value="neon">🟢 Neon</option>
+              <option value="pastel">🎨 Pastel</option>
+              <option value="retro">✨ Retro</option>
+            </select>
+          )}
           <button
             className="btn"
             onClick={() => {
@@ -402,7 +452,17 @@ export function GamePlayer({ game }: GamePlayerProps) {
         <div className={styles.screen}>
           {/* Arena de juego */}
           <div className={styles.arena}>
-            {isAsteroidsGame ? (
+            {isFroggerGame ? (
+              <FroggerGame
+                key={froggerResetKey}
+                paused={paused}
+                onGameOver={handleFroggerGameOver}
+                onScoreChange={handleFroggerScoreChange}
+                onLivesChange={handleFroggerLivesChange}
+                onLevelChange={handleFroggerLevelChange}
+                colorPalette={froggerColorPalette}
+              />
+            ) : isAsteroidsGame ? (
               <AsteroidsGame
                 onGameOver={handleAsteroidsGameOver}
                 onScoreChange={handleAsteroidsScoreChange}

@@ -4,7 +4,8 @@ description: |
   Post-implementation enhancer para juegos. Después de ejecutar /spec-impl,
   este skill agrega automáticamente skins (3 paletas de colores) y controles
   móviles táctiles. Extrae game-id del spec, verifica la implementación base,
-  y ejecuta secuencialmente skin-designer y mobile-porter con reporting unificado.
+  ejecuta secuencialmente skin-designer y mobile-porter, y reporta resultados.
+  NO hace commits ni pushes - solo implementa features.
 disable-model-invocation: false
 argument-hint: "[spec-reference]"
 allowed-tools:
@@ -40,7 +41,7 @@ Games with mobile support:
 !`grep 'gameId:' lib/game/controls/controlMappings.ts | grep -oP "'\K[^']+" | tr '\n' ',' | sed 's/,$//'`
 
 Games with skins:
-!`find lib/game/*/constants.ts -exec grep -l "COLOR_PALETTES" {} \; 2>/dev/null | grep -oP 'lib/game/\K\w+(?=/constants)' | tr '\n' ',' | sed 's/,$//'`
+!`grep -rl "COLOR_PALETTES" lib/game/ 2>/dev/null | grep "constants.ts" | cut -d/ -f3 | sort -u | tr '\n' ',' | sed 's/,$//'`
 
 ---
 
@@ -592,38 +593,6 @@ http://localhost:3000/juego/[game-id]/jugar
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📝 SIGUIENTE PASO: COMMIT
-
-### Opción A: Commit separado para enhancement (recomendado)
-
-```bash
-# Agregar solo archivos del enhancement
-[listar comandos git add para cada archivo modificado]
-
-git commit -m "feat(games): add skins and mobile controls to [Game Name]
-
-- Add 3 color palettes (neon, pastel, retro) with selector in HUD
-- Add mobile touch controls support
-- Both features integrate with existing game implementation
-
-Enhances: specs/[numero]-[nombre].md
-
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
-```
-
-### Opción B: Amend al commit de spec-impl (si está en el mismo branch y es commit reciente)
-
-```bash
-# Agregar archivos del enhancement
-[listar comandos git add]
-
-# Amend al commit anterior
-git commit --amend
-# Actualizar mensaje para incluir "skins and mobile controls"
-```
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 [Si alguna fase tuvo status ⚠️:]
 
 ⚠️  ATENCIÓN: FEATURES CON ISSUES
@@ -663,6 +632,9 @@ El juego [GAME TITLE] ahora tiene:
   [FASE2_STATUS] 3 paletas de colores seleccionables
   [FASE3_STATUS] Controles táctiles para móvil
 
+📌 NOTA: Los archivos están modificados pero NO se hizo commit.
+   Revisa los cambios y commitea cuando estés listo.
+
 ¿Necesitas ajustes o correcciones?
 ```
 
@@ -677,7 +649,7 @@ El juego [GAME TITLE] ahora tiene:
 3. **Reportar estado de CADA fase claramente** - Transparencia total con ✅ y ⚠️.
 4. **Permitir continuar con warnings** - Skins y mobile son nice-to-have, no bloqueantes.
 5. **Proporcionar instrucciones de prueba claras** - Usuario debe poder validar.
-6. **Sugerir comandos de commit** - Pero NO commitear automáticamente.
+6. **Reportar archivos modificados** - Mostrar qué cambió pero dejar al usuario decidir cuándo commitear.
 7. **Extraer game-id con estrategias múltiples** - Robustez ante variaciones de formato.
 8. **Preguntar ante ambigüedad** - Mejor preguntar que asumir incorrectamente.
 

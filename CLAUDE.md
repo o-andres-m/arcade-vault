@@ -222,6 +222,7 @@ móviles táctiles. **Automatiza los pasos posteriores a la implementación base
 3. Ejecuta `/skin-designer [game-id]` → Agrega 3 paletas de colores
 4. Ejecuta `/mobile-porter [game-id]` → Adapta controles móviles
 5. Reporta resumen unificado con instrucciones de prueba
+6. **NO hace commits ni pushes** - Solo implementa y reporta cambios
 
 **Features agregadas:**
 
@@ -234,6 +235,7 @@ móviles táctiles. **Automatiza los pasos posteriores a la implementación base
 
 **Nota:** Este skill es un enhancer post-implementación. NO reemplaza a `/spec-impl`,
 sino que lo complementa automatizando los pasos posteriores estándar de todos los juegos.
+Los archivos quedan modificados sin commit - el usuario decide cuándo commitear.
 
 #### `/game-jam` - Game Concept Generator
 
