@@ -10,6 +10,7 @@ import { AsteroidsGame } from "./AsteroidsGame";
 import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import SnakeGame, { SnakeGameHandle } from "./SnakeGame";
 import TetrisGame from "./TetrisGame";
+import PongGame from "./PongGame";
 import dynamic from "next/dynamic";
 
 const FroggerGame = dynamic(() => import("./FroggerGame"), { ssr: false });
@@ -41,10 +42,12 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const [arkanoidColorPalette, setArkanoidColorPalette] = useState<ColorPalette>("retro");
   const [snakeColorPalette, setSnakeColorPalette] = useState<ColorPalette>("retro");
   const [froggerColorPalette, setFroggerColorPalette] = useState<ColorPalette>("retro");
+  const [pongColorPalette, setPongColorPalette] = useState<ColorPalette>("retro");
   const [showMobileControls, setShowMobileControls] = useState(false);
   const [controlMode, setControlMode] = useState<'dpad' | 'joystick'>('dpad');
   const [joystickAngle, setJoystickAngle] = useState<number | null>(null);
   const [joystickDistance, setJoystickDistance] = useState<number>(0);
+  const [isMobileDevice, setIsMobileDevice] = useState(typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false);
   const arkanoidRef = useRef<ArkanoidGameHandle>(null);
   const snakeRef = useRef<SnakeGameHandle>(null);
 
@@ -54,6 +57,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
   const isSnakeGame = game.id === 'snake';
   const isTetrisGame = game.id === 'tetris';
   const isFroggerGame = game.id === 'frogger';
+  const isPongGame = game.id === 'duelo-pixel';
 
   useEffect(() => {
     const initialLives = isSnakeGame ? 5 : 3;
@@ -65,6 +69,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const prefs = loadControlPreferences();
     setShowMobileControls(isTouch && prefs.showControls);
     setControlMode(prefs.mode);
+    setIsMobileDevice(window.matchMedia('(max-width: 768px)').matches);
   }, []);
 
   useEffect(() => {
@@ -82,16 +87,16 @@ export function GamePlayer({ game }: GamePlayerProps) {
     }
   }, [user, profile]);
 
-  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris/Frogger)
+  // Auto-incremento de puntuación (solo para juegos no-Asteroides/Arkanoid/Snake/Tetris/Frogger/Pong)
   useEffect(() => {
-    if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame || paused || over) return;
+    if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame || isPongGame || paused || over) return;
 
     const interval = setInterval(() => {
       setScore((prev) => prev + Math.floor(Math.random() * 50 + 10));
     }, 220);
 
     return () => clearInterval(interval);
-  }, [isAsteroidsGame, isArkanoidGame, isSnakeGame, isTetrisGame, isFroggerGame, paused, over]);
+  }, [isAsteroidsGame, isArkanoidGame, isSnakeGame, isTetrisGame, isFroggerGame, isPongGame, paused, over]);
 
   // Subir nivel cada 2500 puntos
   useEffect(() => {
@@ -186,6 +191,15 @@ export function GamePlayer({ game }: GamePlayerProps) {
     setLevel(newLevel);
   };
 
+  const handlePongGameOver = (finalScore: number) => {
+    setScore(finalScore);
+    setOver(true);
+  };
+
+  const handlePongScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
   const handleEnd = () => {
     setOver(true);
   };
@@ -200,7 +214,7 @@ export function GamePlayer({ game }: GamePlayerProps) {
     const finalName = cleanName.slice(0, 10) || 'PLAYER1';
 
     try {
-      if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame) {
+      if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame || isPongGame) {
         await saveScore(game.id, score, finalName);
 
         if (!user) {
@@ -423,6 +437,18 @@ export function GamePlayer({ game }: GamePlayerProps) {
               <option value="retro">✨ Retro</option>
             </select>
           )}
+          {isPongGame && (
+            <select
+              value={pongColorPalette}
+              onChange={(e) => setPongColorPalette(e.target.value as ColorPalette)}
+              className={`btn ${styles.colorSelect}`}
+              title="Select color palette"
+            >
+              <option value="neon">🟢 Neon</option>
+              <option value="pastel">🎨 Pastel</option>
+              <option value="retro">✨ Retro</option>
+            </select>
+          )}
           <button
             className="btn"
             onClick={() => {
@@ -495,6 +521,14 @@ export function GamePlayer({ game }: GamePlayerProps) {
                 colorPalette={snakeColorPalette}
                 onColorPaletteChange={setSnakeColorPalette}
               />
+            ) : isPongGame ? (
+              <PongGame
+                onGameOver={handlePongGameOver}
+                isPaused={paused}
+                onScoreChange={handlePongScoreChange}
+                colorPalette={pongColorPalette}
+                onColorPaletteChange={setPongColorPalette}
+              />
             ) : isTetrisGame ? (
               <TetrisGame
                 key={tetrisResetKey}
@@ -537,13 +571,41 @@ export function GamePlayer({ game }: GamePlayerProps) {
       </div>
 
       {/* Mobile Controls (fuera del CRT) */}
-      {showMobileControls && (
+      {showMobileControls && !isPongGame && (
         <MobileControls
           gameId={game.id}
           onInput={handleMobileInput}
           isPaused={paused}
           controlMode={controlMode}
         />
+      )}
+
+      {/* Pong Mobile Controls */}
+      {isPongGame && isMobileDevice && (
+        <div className="flex gap-4 mt-6 justify-center">
+          <button
+            className="btn"
+            onTouchStart={(e) => { e.preventDefault(); simulateKeyEvent('q', 'keydown'); }}
+            onTouchEnd={(e) => { e.preventDefault(); simulateKeyEvent('q', 'keyup'); }}
+            onMouseDown={() => simulateKeyEvent('q', 'keydown')}
+            onMouseUp={() => simulateKeyEvent('q', 'keyup')}
+            onMouseLeave={() => simulateKeyEvent('q', 'keyup')}
+            style={{ fontSize: '1.5rem', padding: '1.5rem 3rem' }}
+          >
+            ▲ ARRIBA
+          </button>
+          <button
+            className="btn"
+            onTouchStart={(e) => { e.preventDefault(); simulateKeyEvent('a', 'keydown'); }}
+            onTouchEnd={(e) => { e.preventDefault(); simulateKeyEvent('a', 'keyup'); }}
+            onMouseDown={() => simulateKeyEvent('a', 'keydown')}
+            onMouseUp={() => simulateKeyEvent('a', 'keyup')}
+            onMouseLeave={() => simulateKeyEvent('a', 'keyup')}
+            style={{ fontSize: '1.5rem', padding: '1.5rem 3rem' }}
+          >
+            ▼ ABAJO
+          </button>
+        </div>
       )}
 
       {/* Modal Game Over */}

@@ -69,6 +69,15 @@ export const GAME_CONTROLS: Record<string, GameControlMapping> = {
       right: 'Saltar der'
     },
     buttons: {}
+  },
+
+  'duelo-pixel': {
+    gameId: 'duelo-pixel',
+    directional: {
+      up: 'Mover arriba',
+      down: 'Mover abajo'
+    },
+    buttons: {}
   }
 }
 
