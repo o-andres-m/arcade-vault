@@ -156,133 +156,46 @@ Los archivos quedan modificados sin commit - el usuario decide cuándo commitear
 
 ### Custom Agents
 
-Arcade Vault tiene 4 agentes personalizados que Claude invoca automáticamente
-según el contexto. **No son slash commands** - Claude los detecta y ejecuta cuando
-son necesarios.
+Agentes que Claude invoca automáticamente según el contexto. **No son slash commands** - 
+solo describe lo que necesitas y Claude decidirá si invocar un agente.
 
 **Location:** `.claude/agents/`
 
-**¿Cuándo usar?** No los invocas directamente. Simplemente pídele a Claude lo que
-necesitas en lenguaje natural y él decidirá si debe invocar un agente.
+#### `game-jam`
 
-#### `game-jam` - Game Concept Generator
+Genera 3 conceptos de juegos arcade basados en un tema específico. Crea specs completas
+listas para `/spec-impl`. **Solo genera specs, no implementa código.**
 
-Genera 3 conceptos de juegos arcade basados en un tema específico. Crea specs
-completas listas para implementar con `/spec-impl`, mezclando adaptaciones de
-clásicos con ideas originales. **Solo genera specs, no implementa código.**
+**Triggers:** "genera conceptos de juegos [tema]", "ideas de juegos [temática]"
 
-**Claude invoca este agente cuando:**
-- Pides "genera conceptos de juegos"
-- Mencionas un tema y quieres juegos relacionados
-- Preguntas "qué juegos puedo hacer con tema X"
+**Output:** Specs en `specs/game-jam/[tema]/[game-id]/spec.md` con balance de categorías.
 
-**Ejemplos de prompts:**
+#### `game-planner`
 
-```
-"Genera 3 conceptos de juegos con tema espacial"
-"Quiero ideas de juegos arcade para tema underwater"
-"Necesito juegos inspirados en medieval"
-```
+Analiza el catálogo actual y sugiere juegos estratégicamente usando scoring objetivo
+(Balance, Complejidad, Popularidad, Referencias). Mantiene memoria en `references/game-suggestions.md`.
 
-**Features:**
+**Triggers:** "qué juegos agregar", "sugerencias sin tema", "análisis del catálogo"
 
-- Genera 3 conceptos únicos por tema
-- Balance de categorías (ARCADE, PUZZLE, SHOOTER, VERSUS)
-- Specs completas siguiendo formato SPEC 06/07
-- Entidades concretas y constantes reales
-- Output: `specs/game-jam/[tema]/[game-id]/spec.md`
+**Output:** Actualiza `game-suggestions.md` con estados (🎯 🔍 ✅ ❌) y top 3-5 sugerencias.
 
-**Workflow:**
-
-1. Analiza e interpreta el tema
-2. Genera 5-7 candidatos (clásicos adaptados + originales)
-3. Puntúa y selecciona top 3
-4. Crea estructura de directorios
-5. Genera specs completas para cada juego
-
-**Location:** `.claude/agents/game-jam.md`
-
-#### `game-planner` - Game Strategy Advisor
-
-Analiza el catálogo actual de Arcade Vault y sugiere juegos estratégicamente
-usando 4 criterios objetivos. Mantiene memoria en `references/game-suggestions.md`.
-
-**Claude invoca este agente cuando:**
-- Preguntas "qué juegos debería agregar"
-- Pides sugerencias sin tema específico
-- Quieres análisis estratégico del catálogo
-
-**Ejemplos de prompts:**
-
-```
-"¿Qué juegos me recomiendas agregar?"
-"Necesito sugerencias para balancear el catálogo"
-"¿Qué categoría está subrepresentada?"
-```
-
-**Features:**
-
-- Scoring objetivo (Balance, Complejidad, Popularidad, Referencias)
-- Actualiza `references/game-suggestions.md` con estados (🎯 🔍 ✅ ❌)
-- Considera gaps en categorías actuales
-- Sugiere 3-5 juegos por invocación
-
-**Location:** `.claude/agents/game-planner.md`
-
-#### `skin-designer` - Game Skin System Implementation
+#### `skin-designer`
 
 Implementa sistema de 3 paletas de colores (neon, pastel, retro) para juegos.
-Agrega selector visual al HUD y persistencia en localStorage. **Implementa código
-directamente, no genera specs.**
+Agrega selector en HUD y persistencia en localStorage. **Implementa código directamente.**
 
-**Claude invoca este agente cuando:**
-- Juego nuevo NO tiene paletas de colores
-- Pides "agregar skins/temas de color"
-- `/spec-impl-game` lo invoca automáticamente
+**Triggers:** Juego sin paletas, "agregar skins", invocado por `/spec-impl-game`
 
-**Ejemplos de prompts:**
+**Output:** Crea `constants.ts`, modifica componente juego, actualiza GamePlayer. Patrón basado en Tetris.
 
-```
-"Agrega sistema de skins a snake"
-"Necesito paletas de colores para el juego nuevo"
-```
+#### `mobile-porter`
 
-**Features:**
+Adapta juegos para funcionalidad móvil táctil. Analiza controles de teclado y diseña
+mapeo apropiado (DPad/Joystick/ArcadeJoystick). **Implementa código directamente.**
 
-- 3 paletas por juego: Neon, Pastel, Retro
-- Selector en HUD (al lado de botón Pausa)
-- Persistencia en localStorage
-- Sigue patrón de referencia (Tetris)
+**Triggers:** Juego sin entrada en `controlMappings.ts`, "controles móviles", invocado por `/spec-impl-game`
 
-**Location:** `.claude/agents/skin-designer.md`
-
-#### `mobile-porter` - Mobile Touch Adaptation
-
-Adapta juegos para funcionalidad móvil táctil. Analiza controles de teclado y
-diseña mapeo apropiado (DPad/Joystick/ArcadeJoystick). **Implementa código
-directamente, no genera specs.**
-
-**Claude invoca este agente cuando:**
-- Juego nuevo NO tiene entrada en `controlMappings.ts`
-- Pides "agregar controles móviles/táctiles"
-- `/spec-impl-game` lo invoca automáticamente
-
-**Ejemplos de prompts:**
-
-```
-"Adapta snake para móvil"
-"Necesito controles táctiles para el juego nuevo"
-```
-
-**Features:**
-
-- Analiza controles de teclado del juego
-- Diseña mapeo móvil apropiado (DPad, Joystick, botones)
-- Agrega entrada en `lib/game/controls/controlMappings.ts`
-- Soporta casos especiales (control analógico)
-- Mantiene compatibilidad con desktop (aditivo, no reemplazo)
-
-**Location:** `.claude/agents/mobile-porter.md`
+**Output:** Agrega entrada en `lib/game/controls/controlMappings.ts`. Mantiene compatibilidad desktop.
 
 ## Supabase Integration
 
