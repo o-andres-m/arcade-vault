@@ -16,6 +16,10 @@ export function AuthForm() {
   const [pass, setPass] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -86,9 +90,11 @@ export function AuthForm() {
       // Create anonymous profile
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        await supabase.from('profiles').insert({
+        await supabase.from('profiles').upsert({
           id: user.id,
           username: `GUEST_${Date.now().toString().slice(-4)}`,
+        }, {
+          onConflict: 'id'
         }).select().single()
       }
 
@@ -105,6 +111,33 @@ export function AuthForm() {
       setError(message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleForgotPassword = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setResetLoading(true)
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth/reset`,
+      })
+
+      if (error) throw error
+      setResetSent(true)
+    } catch (err) {
+      let message = 'Error al enviar email de recuperación'
+      if (err instanceof Error) {
+        if (err.message.includes('rate limit') || err.message.includes('429')) {
+          message = 'Demasiados intentos. Espera unos minutos e intenta de nuevo.'
+        } else {
+          message = err.message
+        }
+      }
+      setError(message)
+    } finally {
+      setResetLoading(false)
     }
   }
 
@@ -172,6 +205,19 @@ export function AuthForm() {
           />
         </div>
 
+        {tab === 'in' && (
+          <div className={styles.forgotPassword}>
+            <button
+              type="button"
+              onClick={() => setShowForgotPassword(true)}
+              className={styles.forgotLink}
+              disabled={loading}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+        )}
+
         <button type="submit" className={`btn ${styles.submitBtn}`} disabled={loading}>
           {loading ? 'CARGANDO...' : tab === 'in' ? 'ENTRAR AL VAULT' : 'CREAR Y JUGAR'}
         </button>
@@ -199,6 +245,68 @@ export function AuthForm() {
       <div className={styles.footer}>
         Al continuar, aceptas nuestros términos de servicio y política de privacidad
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div className={styles.forgotModal}>
+          <div className={styles.forgotCard}>
+            <button
+              className={styles.closeModal}
+              onClick={() => {
+                setShowForgotPassword(false)
+                setResetSent(false)
+                setResetEmail('')
+              }}
+            >
+              ✕
+            </button>
+
+            <h3>Recuperar contraseña</h3>
+
+            {!resetSent ? (
+              <form onSubmit={handleForgotPassword}>
+                <p>Ingresa tu email y te enviaremos un link para resetear tu contraseña.</p>
+
+                <div className={styles.field}>
+                  <label htmlFor="resetEmail">Email</label>
+                  <input
+                    id="resetEmail"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    disabled={resetLoading}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className={`btn ${styles.submitBtn}`}
+                  disabled={resetLoading}
+                >
+                  {resetLoading ? 'ENVIANDO...' : 'ENVIAR LINK'}
+                </button>
+              </form>
+            ) : (
+              <div className={styles.resetSuccess}>
+                <p>✓ Email enviado</p>
+                <p>Revisa tu bandeja de entrada y haz clic en el link para resetear tu contraseña.</p>
+                <button
+                  className="btn ghost"
+                  onClick={() => {
+                    setShowForgotPassword(false)
+                    setResetSent(false)
+                    setResetEmail('')
+                  }}
+                >
+                  CERRAR
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
