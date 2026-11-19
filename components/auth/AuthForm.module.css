@@ -43,6 +43,70 @@
   color: var(--ink);
 }
 
+/* OAuth Section */
+.oauthSection {
+  margin-bottom: 24px;
+}
+
+.githubBtn {
+  width: 100%;
+  background: #24292e;
+  border: 1px solid #444;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 14px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.githubBtn:hover:not(:disabled) {
+  background: #2f363d;
+  border-color: #555;
+}
+
+.githubBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.githubBtn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.oauthSection .divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+}
+
+.oauthSection .divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.oauthSection .divider span {
+  position: relative;
+  background: var(--bg-2);
+  padding: 0 12px;
+}
+
 /* Tabs */
 .tabs {
   display: grid;
@@ -170,46 +234,6 @@
 .guestBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-/* Divider */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0;
-  font-family: var(--pixel);
-  font-size: 8px;
-  color: var(--ink-faint);
-  letter-spacing: 0.16em;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-
-/* Social buttons */
-.social {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.socialBtn {
-  padding: 12px;
-  font-size: 9px;
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.socialBtn:hover {
-  opacity: 0.6;
-  box-shadow: none;
 }
 
 /* Footer */
