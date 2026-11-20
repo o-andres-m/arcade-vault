@@ -68,7 +68,7 @@ export function AuthForm() {
         } else if (err.message.includes('User already registered')) {
           message = 'Este email ya está registrado. Intenta iniciar sesión.'
         } else if (err.message.includes('Invalid password')) {
-          message = 'La contraseña debe tener al menos 6 caracteres.'
+          message = 'La contraseña debe tener al menos 8 caracteres.'
         } else {
           message = err.message
         }
@@ -244,6 +244,7 @@ export function AuthForm() {
             onChange={(e) => setPass(e.target.value)}
             disabled={loading}
             required
+            minLength={8}
           />
         </div>
 
