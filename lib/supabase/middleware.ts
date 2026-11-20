@@ -106,5 +106,17 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Protección de rutas - Redirigir usuarios no autenticados
+  const protectedRoutes = ['/biblioteca', '/perfil']
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  if (isProtectedRoute && !user) {
+    const redirectUrl = new URL('/auth', request.url)
+    redirectUrl.searchParams.set('next', request.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
+  }
+
   return response
 }

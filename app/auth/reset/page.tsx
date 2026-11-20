@@ -68,8 +68,8 @@ export default function ResetPasswordPage() {
     setError('')
 
     // Validación de contraseñas
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.')
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.')
       return
     }
 
@@ -173,7 +173,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
 
@@ -187,7 +187,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
 
