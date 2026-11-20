@@ -197,6 +197,16 @@ mapeo apropiado (DPad/Joystick/ArcadeJoystick). **Implementa código directament
 
 **Output:** Agrega entrada en `lib/game/controls/controlMappings.ts`. Mantiene compatibilidad desktop.
 
+#### `security-audit`
+
+Audita la seguridad de Arcade Vault: RLS en Supabase, autenticación, headers HTTP,
+funciones SQL, y vulnerabilidades comunes. **Solo reporta findings, no implementa fixes.**
+
+**Triggers:** "auditoría de seguridad", "security review", "¿está segura la app?", antes de deploy importante
+
+**Output:** Reporte markdown con findings por severidad (CRITICAL, HIGH, MEDIUM, LOW, INFO).
+Base: SPEC 14 (Medidas de Seguridad Básicas).
+
 ## Supabase Integration
 
 ### Configuration
