@@ -7,6 +7,8 @@ import styles from './AuthForm.module.css'
 
 type TabType = 'in' | 'up'
 
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/
+
 export function AuthForm() {
   const router = useRouter()
   const supabase = createClient()
@@ -28,6 +30,12 @@ export function AuthForm() {
 
     try {
       if (tab === 'up') {
+        if (!USERNAME_REGEX.test(username)) {
+          setError('Username: 3-20 caracteres, solo letras, números, guiones y underscores')
+          setLoading(false)
+          return
+        }
+
         // Sign up
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,

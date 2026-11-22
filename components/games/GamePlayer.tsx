@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Game, Score } from "@/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
-import { saveScore } from "@/lib/supabase/scores";
+import { saveScore, saveGuestScore } from "@/lib/supabase/scores";
 import { AsteroidsGame } from "./AsteroidsGame";
 import { ArkanoidGame, ArkanoidGameHandle } from "./ArkanoidGame";
 import SnakeGame, { SnakeGameHandle } from "./SnakeGame";
@@ -215,7 +215,11 @@ export function GamePlayer({ game }: GamePlayerProps) {
 
     try {
       if (isAsteroidsGame || isArkanoidGame || isSnakeGame || isTetrisGame || isFroggerGame || isPongGame) {
-        await saveScore(game.id, score, finalName);
+        if (user) {
+          await saveScore(game.id, score, finalName);
+        } else {
+          saveGuestScore(game.id, score);
+        }
 
         if (!user) {
           localStorage.setItem('av_guest_name', finalName);
