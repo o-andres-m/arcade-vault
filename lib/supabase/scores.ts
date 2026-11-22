@@ -2,6 +2,18 @@ import { createClient } from './client'
 import { LeaderboardEntry, RecentActivity, Score } from '@/types'
 import { GAMES } from '@/lib/data'
 
+export function saveGuestScore(gameId: string, score: number) {
+  const key = `guest-${gameId}-scores`
+  const existing = JSON.parse(localStorage.getItem(key) || '{"scores":[]}')
+  existing.scores.push({ id: crypto.randomUUID(), score, timestamp: Date.now() })
+  localStorage.setItem(key, JSON.stringify(existing))
+}
+
+export function getGuestScores(gameId: string) {
+  const key = `guest-${gameId}-scores`
+  return JSON.parse(localStorage.getItem(key) || '{"scores":[]}').scores
+}
+
 export async function saveScore(gameId: string, score: number, displayName?: string): Promise<Score> {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
