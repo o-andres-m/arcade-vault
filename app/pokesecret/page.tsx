@@ -10,34 +10,52 @@ interface Pokemon {
   image: string;
 }
 
+const MAX_POKEMON_ID = 1025;
+
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatPokemonId(id: number): string {
+  return id.toString().padStart(3, '0');
+}
+
+function getRandomPokemonId(): number {
+  return Math.floor(Math.random() * MAX_POKEMON_ID) + 1;
+}
+
 export default function PokemonSecret() {
   const [counter, setCounter] = useState(0);
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchRandomPokemon = async () => {
+  async function fetchRandomPokemon(): Promise<void> {
     setLoading(true);
+    setError(null);
     try {
-      const randomId = Math.floor(Math.random() * 1025) + 1;
+      const randomId = getRandomPokemonId();
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
-      setPokemon({
-        id: data.id,
-        name: data.name.charAt(0).toUpperCase() + data.name.slice(1),
-        image: data.sprites.other['official-artwork'].front_default || data.sprites.front_default,
-      });
+      const image =
+        data.sprites.other?.['official-artwork']?.front_default ??
+        data.sprites.front_default;
+
+      setPokemon({ id: data.id, name: capitalize(data.name), image });
       setCounter((prev) => prev + 1);
-    } catch (error) {
-      console.error('Error fetching Pokemon:', error);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error capturando Pokémon';
+      setError(message);
+      console.error('Error fetching Pokemon:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className={styles.container}>
-      {/* Simplified Header */}
       <header className={styles.header}>
         <Link href="/" className={styles.logo}>
           <span>ARCADE VAULT</span>
@@ -45,16 +63,13 @@ export default function PokemonSecret() {
         <h1 className={styles.title}>POKéMON CATCHER</h1>
       </header>
 
-      {/* Main Content */}
       <main className={styles.main}>
         <div className={styles.card}>
-          {/* Counter */}
           <div className={styles.counterSection}>
             <span className={styles.counterLabel}>Pokémon Capturados:</span>
             <div className={styles.counter}>{counter}</div>
           </div>
 
-          {/* Pokemon Display */}
           <div className={styles.pokemonDisplay}>
             {pokemon ? (
               <>
@@ -64,7 +79,7 @@ export default function PokemonSecret() {
                   className={styles.pokemonImage}
                 />
                 <h2 className={styles.pokemonName}>{pokemon.name}</h2>
-                <span className={styles.pokemonId}>#{pokemon.id.toString().padStart(3, '0')}</span>
+                <span className={styles.pokemonId}>#{formatPokemonId(pokemon.id)}</span>
               </>
             ) : (
               <div className={styles.placeholder}>
@@ -73,7 +88,6 @@ export default function PokemonSecret() {
             )}
           </div>
 
-          {/* Button */}
           <button
             onClick={fetchRandomPokemon}
             disabled={loading}
@@ -81,6 +95,8 @@ export default function PokemonSecret() {
           >
             {loading ? 'CAPTURANDO...' : 'CAPTURAR POKÉMON'}
           </button>
+
+          {error && <div className={styles.error}>{error}</div>}
         </div>
       </main>
     </div>
